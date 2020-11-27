@@ -2,54 +2,12 @@
   <div class="footer">
     <div class="foot-main">
       <div class="foot-top">
-        <div>
-          <h4>购物指南</h4>
+        <div v-for="(item, index) in footTop" :key="index">
+          <h4>{{ item.title }}</h4>
           <ul>
-            <li>购物流程</li>
-            <li>会员介绍</li>
-            <li>生活旅行/团购</li>
-            <li>常见问题</li>
-            <li>购物指南</li>
-          </ul>
-        </div>
-        <div>
-          <h4>配送方式</h4>
-          <ul>
-            <li>上门自提</li>
-            <li>211限时达</li>
-            <li>配送服务查询</li>
-            <li>配送费收取标准</li>
-            <li>海外配送</li>
-          </ul>
-        </div>
-        <div>
-          <h4>支付方式</h4>
-          <ul>
-            <li>货到付款</li>
-            <li>在线支付</li>
-            <li>分期付款</li>
-            <li>邮局汇款</li>
-            <li>公司转账</li>
-          </ul>
-        </div>
-        <div>
-          <h4>售后服务</h4>
-          <ul class="footerItemCon">
-            <li>售后政策</li>
-            <li>价格保护</li>
-            <li>退款说明</li>
-            <li>返修/退换货</li>
-            <li>取消订单</li>
-          </ul>
-        </div>
-        <div>
-          <h4>特色服务</h4>
-          <ul class="footerItemCon">
-            <li>夺宝岛</li>
-            <li>DIY装机</li>
-            <li>延保服务</li>
-            <li>尚品汇E卡</li>
-            <li>尚品汇通信</li>
+            <li v-for="(items, count) in item.liList" :key="count">
+              {{ items }}
+            </li>
           </ul>
         </div>
         <div>
@@ -62,43 +20,10 @@
       <div class="foot-bot">
         <div class="about">
           <ul>
-            <li>
-              关于我们
-              <span></span>
+            <li v-for="(item, index) in about" :key="index">
+              {{ item }}
+              <span v-if="index < about.length - 1"></span>
             </li>
-            <li>
-              联系我们
-              <span></span>
-            </li>
-            <li>
-              关于我们
-              <span></span>
-            </li>
-            <li>
-              商家入驻
-              <span></span>
-            </li>
-            <li>
-              营销中心
-              <span></span>
-            </li>
-            <li>
-              友情链接
-              <span></span>
-            </li>
-            <li>
-              关于我们
-              <span></span>
-            </li>
-            <li>
-              营销中心
-              <span></span>
-            </li>
-            <li>
-              友情链接
-              <span></span>
-            </li>
-            <li>关于我们</li>
           </ul>
           <p>地址：北京市昌平区宏福科技园综合楼6层</p>
           <p>京ICP备19006430号</p>
@@ -111,6 +36,62 @@
 <script>
 export default {
   name: "Footer",
+  data() {
+    return {
+      footTop: [
+        {
+          title: "购物指南",
+          liList: [
+            "购物流程",
+            "会员介绍",
+            "生活旅行/团购",
+            "常见问题",
+            "购物指南",
+          ],
+        },
+        {
+          title: "配送方式",
+          liList: [
+            "上门自提",
+            "211限时达",
+            "配送服务查询",
+            "配送费收取标准",
+            "海外配送",
+          ],
+        },
+        {
+          title: "支付方式",
+          liList: ["货到付款", "在线支付", "分期付款", "邮局汇款", "公司转账"],
+        },
+        {
+          title: "售后服务",
+          liList: [
+            "售后政策",
+            "价格保护",
+            "返修/退换货",
+            "常见问题",
+            "取消订单",
+          ],
+        },
+        {
+          title: "特色服务",
+          liList: ["夺宝岛", "DIY装机", "延保服务", "尚品汇E卡", "尚品汇通信"],
+        },
+      ],
+      about: [
+        "关于我们",
+        "联系我们",
+        "关于我们",
+        "商家入驻",
+        "营销中心",
+        "友情链接",
+        "关于我们",
+        "营销中心",
+        "友情链接",
+        "关于我们",
+      ],
+    };
+  },
 };
 </script>
 
@@ -133,25 +114,37 @@ export default {
   padding: 20px 20px 20px 40px;
   border-bottom: 1px solid #b3aeae;
 }
+.foot-top li {
+  /* height: 16px; */
+  line-height: 18px;
+}
+.foot-top h4 {
+  font-size: 14px;
+}
 .foot-bot {
-  width:1200px;
-  height: 115px;
+  width: 1200px;
+  height: 78px;
   padding: 20px;
 }
-.about{
+.about {
   width: 1200px;
 }
-.about ul{
+.about ul {
   display: flex;
   justify-content: center;
- 
 }
-.about ul li{
-   padding: 15px ;
-   /* border-right: 1px solid #b3aeae; */
+.about ul li {
+  padding: 5px;
 }
-.about p{
-  width:1200px;
-  margin: 0 auto;
+.about ul li span {
+  margin-left: 10px;
+  border-right: 1px solid #b3aeae;
+}
+.about p {
+  width: 1200px;
+  height: 15px;
+  line-height: 15px;
+  margin: 10px auto;
+  text-align: center;
 }
 </style>
