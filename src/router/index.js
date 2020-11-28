@@ -2,10 +2,10 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 
-import Home from "../views/Home/";
-import Login from "../views/Login";
-import Register from "../views/Register";
-import Search from "../views/Search";
+import Home from "@views/Home";
+import Login from "@views/Login";
+import Register from "@views/Register";
+import Search from "@views/Search";
 
 // 重写push和replace方法,为了让编程式导航重复点击时不报错
 const push = VueRouter.prototype.push;

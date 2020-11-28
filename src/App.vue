@@ -10,8 +10,8 @@
 </template>
 
 <script>
-import Header from "./commpents/Header";
-import Footer from "./commpents/Footer";
+import Header from "@comps/Header";
+import Footer from "@comps/Footer";
 
 export default {
   name: "App",
