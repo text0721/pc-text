@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import { reqLogin } from "../../api/user";
+import { reqLogin } from "@api/user";
 
 export default {
   name: "Login",
@@ -18,6 +18,7 @@ export default {
     };
   },
   methods: {
+    //定义点击登录函数发送登录请求
     login() {
       reqLogin(this.phone, this.password)
         .then((res) => {
