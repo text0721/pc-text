@@ -28,8 +28,8 @@
       </router-link>
       <div class="search">
         <form action="">
-          <input type="text" />
-          <button>搜索</button>
+          <input type="text" v-model="searchText" />
+          <button @click="search">搜索</button>
         </form>
       </div>
     </div>
@@ -39,6 +39,56 @@
 <script>
 export default {
   name: "Header",
+  data() {
+    return {
+      searchText: "",
+    };
+  },
+  methods: {
+    // search() {
+    //   //字符串方式添加搜索的可选参数
+    //   //优化搜索为空就去掉"/"
+    //   const searchParams = this.searchText ? "/" + this.searchText : "";
+    //   const location = "/search" + searchParams;
+    //   // console.log(location);
+    //   // 编程式导航：原因将来要做搜索功能（要发送请求）
+    //   this.$router.push(location + "?a=b&c=d");
+    // },
+    search() {
+      const { searchText } = this;
+      const location = {
+        name: "search", //必须使用命名路由才可以传递params
+        // params: this.searchText,//不可以直接添
+        // query:{
+        //   name: "jack",
+        // },
+      };
+      if (this.searchText) {
+        location.params = { searchText };
+      }
+      //对象方式添加可选参数
+      this.$router.push(location);//重写push后可不报错
+      // this.$router
+      //   .push(location)
+      //   .then((res) => {
+      //     //处理成功的回调
+      //     console.log("成功", res);
+      //   })
+      //   .catch((err) => {
+      //     //处理失败的回调，一般不管的，仅防止重复搜索报错而已，不妨碍功能
+      //     console.log("失败", err);
+      //   });
+      // this.$router.push(
+      //   location,
+      //   (res) => {
+      //     console.log("成功", res);
+      //   },
+      //   (err) => {
+      //     console.log("失败", err);
+      //   }
+      // );
+    },
+  },
 };
 </script>
 
