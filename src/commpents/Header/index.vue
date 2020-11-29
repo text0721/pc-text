@@ -27,9 +27,9 @@
         <img src="./images/logo.png" />
       </router-link>
       <div class="search">
-        <form action="">
+        <form action="" @submit.prevent="search">
           <input type="text" v-model="searchText" />
-          <button @click="search">搜索</button>
+          <button>搜索</button>
         </form>
       </div>
     </div>
@@ -45,6 +45,14 @@ export default {
     };
   },
   methods: {
+    /*
+        事件绑定在form中的原因：点击搜索，路径出现问号（原因是提交了表单）
+         1. button 按钮如果没有type 那么在表单中 默认type就是submit
+              此时会提交表单，事件就绑定在form上
+                @submit.prevent="search"
+            2. 不用form表单
+                @click="search
+    */
     // search() {
     //   //字符串方式添加搜索的可选参数
     //   //优化搜索为空就去掉"/"
@@ -59,15 +67,15 @@ export default {
       const location = {
         name: "search", //必须使用命名路由才可以传递params
         // params: this.searchText,//不可以直接添
-        // query:{
-        //   name: "jack",
-        // },
+        query:{
+          name: "jack",
+        },
       };
-      if (this.searchText) {
+      if (searchText) {
         location.params = { searchText };
       }
       //对象方式添加可选参数
-      this.$router.push(location);//重写push后可不报错
+      this.$router.push(location); //重写push后可不报错
       // this.$router
       //   .push(location)
       //   .then((res) => {

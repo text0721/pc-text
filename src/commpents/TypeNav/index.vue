@@ -72,7 +72,7 @@ export default {
     this.CategoryList = result.slice(0, 16);
   },
   // mounted() {
-  //请求响应式数据方法2
+  //请求响应式数据方法2,在挂在期直接reqGetBaseCategoryList()
   //   reqGetBaseCategoryList()
   //     .then((res) => {
   //       this.CategoryList = res.slice(0, 16);
