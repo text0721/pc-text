@@ -14,7 +14,7 @@
           </ul>
 
           <div class="content">
-            <form action="##" @click="login">
+            <form action="##" @submit.prevent="login">
               <div class="input-text clearFix">
                 <span></span>
                 <input
@@ -72,12 +72,6 @@
       <div class="beian">京ICP备19006430号</div>
     </div>
   </div>
-
-  <!-- <div>
-    手机号<input type="text" v-model="phone" /><br />
-    密码<input type="password" v-model="password" /><br />
-    <button @click="login">登录</button>
-  </div> -->
 </template>
 
 <script>
@@ -100,7 +94,7 @@ export default {
           this.$router.push("/");
         })
         .catch((err) => {
-          // window.alert(err)
+          // window.alert(err)//已使用ui提示框
           console.log("失败", err);
         });
     },

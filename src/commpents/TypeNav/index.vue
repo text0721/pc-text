@@ -57,20 +57,37 @@
 </template>
 
 <script>
-import { reqGetBaseCategoryList } from "@api/home";
+// import { reqGetBaseCategoryList } from "@api/home";//此方法是未运用vuex的方法
+import { mapState, mapActions } from "vuex";
 export default {
   //该组件因为要在search中也要用，定义成公共组件
   name: "TypeNav",
-  data() {
-    return {
-      // 初始化遍历的响应式数据
-      CategoryList: [],
-    };
+  computed: {
+    // ...mapState(["CategoryList"]),
+    ...mapState({
+      CategoryList: (state) => state.home.CategoryList.slice(0, 15),
+    }),
   },
-  async mounted() {
-    const result = await reqGetBaseCategoryList();
-    this.CategoryList = result.slice(0, 16);
+  mounted() {
+    // 调用vuex的action函数
+    this.GetBaseCategoryList();
+    // console.log(this.$store.state.CategoryList)
+    // console.log(this.$store)
   },
+  methods: {
+    ...mapActions(["GetBaseCategoryList"]),
+  },
+
+  // data() {
+  //   return {
+  //     // 初始化遍历的响应式数据
+  //     CategoryList: [],
+  //   };
+  // },
+  // async mounted() {
+  //   const result = await reqGetBaseCategoryList();
+  //   this.CategoryList = result.slice(0, 16);
+  // },
   // mounted() {
   //请求响应式数据方法2,在挂在期直接reqGetBaseCategoryList()
   //   reqGetBaseCategoryList()

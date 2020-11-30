@@ -66,8 +66,7 @@ export default {
       const { searchText } = this;
       const location = {
         name: "search", //必须使用命名路由才可以传递params
-        // params: this.searchText,//不可以直接添
-        query:{
+        query: {
           name: "jack",
         },
       };
