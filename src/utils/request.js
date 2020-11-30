@@ -6,7 +6,8 @@ import NProgress from "nprogress";
 import "nprogress/nprogress.css";
 
 const instance = axios.create({
-  baseURL: "http://182.92.128.115/api/",
+  // baseURL: "http://182.92.128.115/api/",
+  baseURL: "/api",//数据代理后
   header: {
     // token: '' // 不可以设置公共参数，此项目登录注册接口不需要
   },

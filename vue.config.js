@@ -15,12 +15,13 @@ module.exports = {
       },
     },
   },
-  // devServer: {
-  //   proxy: {
-  //     "/api": {
-  //       target: "http://182.92.128.115",//目标服务器
-  //       changeOrigin: true, // 允许跨域
-  //     },
-  //   },
-  // },
+  devServer: {
+    //处理跨域的数据代理
+    proxy: {
+      "/api": {
+        target: "http://182.92.128.115", //目标服务器
+        changeOrigin: true, // 允许跨域
+      },
+    },
+  },
 };
