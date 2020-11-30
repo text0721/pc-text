@@ -64,14 +64,18 @@ export default {
     // },
     search() {
       const { searchText } = this;
+
       const location = {
         name: "search", //必须使用命名路由才可以传递params
-        query: {
-          name: "jack",
-        },
       };
+      //添加params参数
       if (searchText) {
         location.params = { searchText };
+      }
+      //添加query参数
+      const { categoryName } = this.$route.query;
+      if (categoryName) {
+        location.query = this.$route.query;
       }
       //对象方式添加可选参数
       this.$router.push(location); //重写push后可不报错

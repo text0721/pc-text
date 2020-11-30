@@ -2,8 +2,14 @@
   <!-- 商品分类导航 -->
   <div class="type-nav">
     <div class="container">
-      <h2 class="all">全部商品分类</h2>
-      <nav class="nav">
+      <h2
+        class="all"
+        @mouseenter="isSearchShow = true"
+        @mouseleave="isSearchShow = false"
+      >
+        全部商品分类
+      </h2>
+      <nav class="nav" @mouseleave="isSearchShow = false">
         <a href="###">服装城</a>
         <a href="###">美妆馆</a>
         <a href="###">尚品汇超市</a>
@@ -13,29 +19,34 @@
         <a href="###">有趣</a>
         <a href="###">秒杀</a>
       </nav>
-      <div class="sort">
-        <div class="all-sort-list2">
+      <transition name="search">
+        <div class="sort" v-show="isHomeShow || isSearchShow">
           <div
-            class="item bo"
-            v-for="lists in categoryList"
-            :key="lists.categoryId"
-            @click="goToSearch"
+            class="all-sort-list2"
+            @mouseenter="isSearchShow = true"
+            @mouseleave="isSearchShow = false"
           >
-            <h3>
-              <!-- 一级 -->
-              <a
-                :data-categoryName="lists.categoryName"
-                :data-categoryId="lists.categoryId"
-                :data-categoryType="1"
-                >{{ lists.categoryName }}</a
-              >
-              <!-- 方法1：使用router-link跳转，但是产生太多组件，页面性能不好 -->
-              <!-- <router-link
+            <div
+              class="item bo"
+              v-for="lists in categoryList"
+              :key="lists.categoryId"
+              @click="goToSearch"
+            >
+              <h3>
+                <!-- 一级 -->
+                <a
+                  :data-categoryName="lists.categoryName"
+                  :data-categoryId="lists.categoryId"
+                  :data-categoryType="1"
+                  >{{ lists.categoryName }}</a
+                >
+                <!-- 方法1：使用router-link跳转，但是产生太多组件，页面性能不好 -->
+                <!-- <router-link
                 :to="`/search?categoryName=${lists.categoryName}&category1Id=${lists.categoryId}`"
                 >{{ lists.categoryName }}</router-link
               > -->
-              <!-- 方法2：编程式导航，但是每个item都会被绑定一次事件 -->
-              <!-- <a
+                <!-- 方法2：编程式导航，但是每个item都会被绑定一次事件 -->
+                <!-- <a
                 @click.prevent="
                   $router.push({
                     name: 'search',
@@ -47,42 +58,43 @@
                 "
                 >{{ lists.categoryName }}</a
               > -->
-            </h3>
-            <div class="item-list clearfix">
-              <div class="subitem">
-                <dl
-                  class="fore"
-                  v-for="list2 in lists.categoryChild"
-                  :key="list2.categoryId"
-                >
-                  <dt>
-                    <!-- 二级 -->
-                    <a
-                      :data-categoryName="list2.categoryName"
-                      :data-categoryId="list2.categoryId"
-                      :data-categoryType="2"
-                      >{{ list2.categoryName }}</a
-                    >
-                  </dt>
-                  <dd>
-                    <em>
-                      <!-- 三级 -->
+              </h3>
+              <div class="item-list clearfix">
+                <div class="subitem">
+                  <dl
+                    class="fore"
+                    v-for="list2 in lists.categoryChild"
+                    :key="list2.categoryId"
+                  >
+                    <dt>
+                      <!-- 二级 -->
                       <a
-                        v-for="list3 in list2.categoryChild"
-                        :key="list3.categoryId"
-                        :data-categoryName="list3.categoryName"
-                        :data-categoryId="list3.categoryId"
-                        :data-categoryType="3"
-                        >{{ list3.categoryName }}</a
+                        :data-categoryName="list2.categoryName"
+                        :data-categoryId="list2.categoryId"
+                        :data-categoryType="2"
+                        >{{ list2.categoryName }}</a
                       >
-                    </em>
-                  </dd>
-                </dl>
+                    </dt>
+                    <dd>
+                      <em>
+                        <!-- 三级 -->
+                        <a
+                          v-for="list3 in list2.categoryChild"
+                          :key="list3.categoryId"
+                          :data-categoryName="list3.categoryName"
+                          :data-categoryId="list3.categoryId"
+                          :data-categoryType="3"
+                          >{{ list3.categoryName }}</a
+                        >
+                      </em>
+                    </dd>
+                  </dl>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </transition>
     </div>
   </div>
 </template>
@@ -93,15 +105,23 @@ import { mapState, mapActions } from "vuex";
 export default {
   //该组件因为要在search中也要用，定义成公共组件
   name: "TypeNav",
+  data() {
+    return {
+      isHomeShow: this.$route.path === "/",
+      isSearchShow: false,
+    };
+  },
+  mounted() {
+    //判断当前是否已有请求好的数据，如果有就不再发送请求了
+    if (this.categoryList.length) return;
+    // 调用vuex的action函数
+    this.getBaseCategoryList();
+  },
   computed: {
     // ...mapState(["categoryList"]),
     ...mapState({
       categoryList: (state) => state.home.categoryList.slice(0, 15),
     }),
-  },
-  mounted() {
-    // 调用vuex的action函数
-    this.getBaseCategoryList();
   },
   methods: {
     ...mapActions(["getBaseCategoryList"]),
@@ -112,14 +132,24 @@ export default {
     goToSearch(e) {
       // dataset是元素自定义属性对象
       const { categoryname, categoryid, categorytype } = e.target.dataset;
+      //判断是否殿中a标签才跳转，点击空白地方不跳转
       if (!categoryname) return;
-      this.$router.push({
+
+      //点击标签后立马隐藏列表
+      this.isSearchShow = false;
+      const location = {
         name: "search",
         query: {
           categoryName: categoryname,
           [`category${categorytype}Id`]: categoryid,
         },
-      });
+      };
+      //判断是否有params参数，有就加上
+      const { searchText } = this.$route.params;
+      if (searchText) {
+        location.params = { searchText };
+      }
+      this.$router.push(location);
     },
   },
 
@@ -177,7 +207,6 @@ export default {
         color: #333;
       }
     }
-
     .sort {
       position: absolute;
       left: 0;
@@ -185,8 +214,16 @@ export default {
       width: 210px;
       height: 461px;
       position: absolute;
-      background: #fafafa;
+      background: rgb(247, 209, 217);
       z-index: 999;
+      // 设置全部商品分类的淡入淡出效果
+      &.search-enter-active {
+        transition: height 0.5s;
+        overflow: hidden;
+      }
+      &.search-enter {
+        height: 0px;
+      }
 
       .all-sort-list2 {
         .item {
