@@ -17,12 +17,36 @@
         <div class="all-sort-list2">
           <div
             class="item bo"
-            v-for="lists in CategoryList"
+            v-for="lists in categoryList"
             :key="lists.categoryId"
+            @click="goToSearch"
           >
             <h3>
               <!-- 一级 -->
-              <a href="">{{ lists.categoryName }}</a>
+              <a
+                :data-categoryName="lists.categoryName"
+                :data-categoryId="lists.categoryId"
+                :data-categoryType="1"
+                >{{ lists.categoryName }}</a
+              >
+              <!-- 方法1：使用router-link跳转，但是产生太多组件，页面性能不好 -->
+              <!-- <router-link
+                :to="`/search?categoryName=${lists.categoryName}&category1Id=${lists.categoryId}`"
+                >{{ lists.categoryName }}</router-link
+              > -->
+              <!-- 方法2：编程式导航，但是每个item都会被绑定一次事件 -->
+              <!-- <a
+                @click.prevent="
+                  $router.push({
+                    name: 'search',
+                    query: {
+                      categoryName: lists.categoryName,
+                      category1Id: lists.categoryId,
+                    },
+                  })
+                "
+                >{{ lists.categoryName }}</a
+              > -->
             </h3>
             <div class="item-list clearfix">
               <div class="subitem">
@@ -33,15 +57,22 @@
                 >
                   <dt>
                     <!-- 二级 -->
-                    <a href="">{{ list2.categoryName }}</a>
+                    <a
+                      :data-categoryName="list2.categoryName"
+                      :data-categoryId="list2.categoryId"
+                      :data-categoryType="2"
+                      >{{ list2.categoryName }}</a
+                    >
                   </dt>
                   <dd>
                     <em>
                       <!-- 三级 -->
                       <a
-                        href=""
                         v-for="list3 in list2.categoryChild"
                         :key="list3.categoryId"
+                        :data-categoryName="list3.categoryName"
+                        :data-categoryId="list3.categoryId"
+                        :data-categoryType="3"
                         >{{ list3.categoryName }}</a
                       >
                     </em>
@@ -63,36 +94,50 @@ export default {
   //该组件因为要在search中也要用，定义成公共组件
   name: "TypeNav",
   computed: {
-    // ...mapState(["CategoryList"]),
+    // ...mapState(["categoryList"]),
     ...mapState({
-      CategoryList: (state) => state.home.CategoryList.slice(0, 15),
+      categoryList: (state) => state.home.categoryList.slice(0, 15),
     }),
   },
   mounted() {
     // 调用vuex的action函数
-    this.GetBaseCategoryList();
-    // console.log(this.$store.state.CategoryList)
-    // console.log(this.$store)
+    this.getBaseCategoryList();
   },
   methods: {
-    ...mapActions(["GetBaseCategoryList"]),
+    ...mapActions(["getBaseCategoryList"]),
+
+    //定义把点击内容的id，名字，类型等作为parame参数显示在url上面
+    //运用自定义属性的方式获取每个需要的值，再把值放在params上面
+    //运用事件委托，这样事件只绑定一次就够了
+    goToSearch(e) {
+      // dataset是元素自定义属性对象
+      const { categoryname, categoryid, categorytype } = e.target.dataset;
+      if (!categoryname) return;
+      this.$router.push({
+        name: "search",
+        query: {
+          categoryName: categoryname,
+          [`category${categorytype}Id`]: categoryid,
+        },
+      });
+    },
   },
 
   // data() {
   //   return {
   //     // 初始化遍历的响应式数据
-  //     CategoryList: [],
+  //     categoryList: [],
   //   };
   // },
   // async mounted() {
   //   const result = await reqGetBaseCategoryList();
-  //   this.CategoryList = result.slice(0, 16);
+  //   this.categoryList = result.slice(0, 16);
   // },
   // mounted() {
   //请求响应式数据方法2,在挂在期直接reqGetBaseCategoryList()
   //   reqGetBaseCategoryList()
   //     .then((res) => {
-  //       this.CategoryList = res.slice(0, 16);
+  //       this.categoryList = res.slice(0, 16);
   //       // console.log("成功", res);
   //     })
   //     .catch((err) => {

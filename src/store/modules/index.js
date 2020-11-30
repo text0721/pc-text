@@ -2,7 +2,7 @@
 import home from "./home";
 
 
-// 统一暴露出去
+// 统一暴露
 export default {
   home,
 

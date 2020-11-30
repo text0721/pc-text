@@ -7,25 +7,23 @@ import modules from "./modules";
 Vue.use(Vuex);
 
 const state = {
-  // state: {
-  //   CategoryList: [], // 首页三级分类列表数据
-  // },
+    // categoryList: [], // 首页三级分类列表数据
 };
 
 const getters = {};
 
 const actions = {
   // 获取首页三级分类列表数据
-  // async GetBaseCategoryList({ commit }) {
+  // async getBaseCategoryList({ commit }) {
   //   //reqGetBaseCategoryList()返回的是promise，用await可以等到该函数的失败还是成功的具体响应数据结果
-  //   const CategoryList = await reqGetBaseCategoryList();
-  //   commit("GET_CATEGORY_LIST", CategoryList);
+  //   const categoryList = await reqGetBaseCategoryList();
+  //   commit("GET_CATEGORY_LIST", categoryList);
   // },
 };
 
 const mutations = {
-  // GET_CATEGORY_LIST(state, CategoryList) {
-  //   state.CategoryList = CategoryList;
+  // GET_CATEGORY_LIST(state, categoryList) {
+  //   state.categoryList = categoryList;
   // },
 };
 
