@@ -112,9 +112,8 @@ body {
   width: 100%;
 }
 .head {
-  width: 100%;
-  min-width: 1200px;
   background-color: #eaeaea;
+  min-width: 1200px;
 }
 .head-nav {
   font-size: 12px;
@@ -128,7 +127,6 @@ body {
 .head-nav-left {
   display: flex;
   height: 16px;
-  /* line-height: 16px; */
 }
 .head-nav-left p {
   color: #333;

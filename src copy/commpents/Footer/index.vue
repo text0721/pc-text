@@ -125,7 +125,6 @@ export default {
 .foot-bot {
   width: 1200px;
   height: 78px;
-  /* padding: 20px; */
 }
 .about {
   width: 1200px;
