@@ -3,32 +3,20 @@
     <div class="sortList clearfix">
       <div class="center">
         <!--banner轮播-->
-        <div class="swiper-container" id="mySwiper">
+        <!-- <div class="swiper-container" id="mySwiper">
           <div class="swiper-wrapper">
-            <div
-              class="swiper-slide"
-              v-for="(item, index) in $store.state.home.banners"
-              :key="index"
-            >
+            <div class="swiper-slide" v-for="item in banners" :key="item.id">
               <img :src="item.imgUrl" />
             </div>
-            <!-- <div class="swiper-slide">
-              <img src="./images/banner2.jpg" />
-            </div>
-            <div class="swiper-slide">
-              <img src="./images/banner3.jpg" />
-            </div>
-            <div class="swiper-slide">
-              <img src="./images/banner4.jpg" />
-            </div> -->
-          </div>
-          <!-- 如果需要分页器 -->
-          <div class="swiper-pagination"></div>
+          </div> -->
+        <!-- 如果需要分页器 -->
+        <!-- <div class="swiper-pagination"></div> -->
 
-          <!-- 如果需要导航按钮 -->
-          <div class="swiper-button-prev"></div>
+        <!-- 如果需要导航按钮 -->
+        <!-- <div class="swiper-button-prev"></div>
           <div class="swiper-button-next"></div>
-        </div>
+        </div> -->
+        <Carousel :carouselList="banners" />
       </div>
       <div class="right">
         <div class="news">
@@ -105,25 +93,60 @@
 
 <script>
 import { mapState, mapActions } from "vuex";
+// import Swiper, { Navigation, Pagination, Autoplay } from "swiper";
+// import "swiper/swiper-bundle.min.css";
+import Carousel from "@comps/Carousel";
+// import { component } from "vue/types/umd";
+
+// Swiper.use([Navigation, Pagination, Autoplay]);
 
 export default {
   name: "ListContainer",
   computed: {
     ...mapState({
-      banners: (state) => {
-        state.home.banners;
-      },
+      //记得把值的结果return
+      banners: (state) => state.home.banners,
     }),
   },
   methods: {
     ...mapActions(["getBanners"]),
   },
-  mounted() {
-    this.getBanners();
-    setTimeout(() => {
-      console.log(this.$store.state.home.banners);
-    }, 0);
-    console.log(this.$store.state);
+  async mounted() {
+    await this.getBanners();
+    // console.log(this.banners);
+    //swiper必须是等所有的所有Dom结构、数据加载，用户界面也更新完毕，才会new
+    //方案1：定时器，DOM结构生成是微任务，定时器是宏任务
+    //方案2，nextTick等当前用户界面更新完毕，再触发其中的回调函数
+    // this.$nextTick(() => {
+    //   new Swiper(".swiper-container", {
+    //     // direction: "vertical", // 垂直切换选项
+    //     loop: true, // 循环模式选项
+
+    //     autoplay: {
+    //       delay: 2000, //设置自动轮播的间隔时间
+    //       disableOnInteraction: false, //当用户点击下一页时，仍会开启自动轮播
+    //     },
+
+    //     // 如果需要分页器
+    //     pagination: {
+    //       el: ".swiper-pagination",
+    //       clickable: true, //小圆点跳转
+    //     },
+
+    //     // 如果需要前进后退按钮
+    //     navigation: {
+    //       nextEl: ".swiper-button-next",
+    //       prevEl: ".swiper-button-prev",
+    //     },
+    //     // 如果需要滚动条
+    //     // scrollbar: {
+    //     //   el: ".swiper-scrollbar",
+    //     // },
+    //   });
+    // });
+  },
+  components: {
+    Carousel,
   },
 };
 </script>

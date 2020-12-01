@@ -10,9 +10,7 @@
     <!-- 猜你喜欢 -->
     <Like />
     <!--楼层-->
-    <Floor />
-    <!--楼层-->
-    <Floor />
+    <Floor v-for="floor in floors" :key="floor.id" :floor="floor" />
     <!--商标-->
     <Brand />
   </div>
@@ -27,8 +25,22 @@ import Rank from "./Rank/Rank";
 import TodayRecommend from "./TodayRecommend/TodayRecommend";
 import TypeNav from "@comps/TypeNav";
 
+import { mapState, mapActions } from "vuex";
+
 export default {
   name: "Home",
+  computed: {
+    ...mapState({
+      //记得把值的结果return
+      floors: (state) => state.home.floors,
+    }),
+  },
+  methods: {
+    ...mapActions(["getFloors"]),
+  },
+  mounted() {
+    this.getFloors();
+  },
   components: {
     Brand,
     Floor,
@@ -42,5 +54,4 @@ export default {
 </script>
 
 <style lang="less" scoped>
-
 </style>

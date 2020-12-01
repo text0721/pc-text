@@ -1,15 +1,9 @@
 <template>
   <!-- 商品分类导航 -->
   <div class="type-nav">
-    <div class="container">
-      <h2
-        class="all"
-        @mouseenter="isSearchShow = true"
-        @mouseleave="isSearchShow = false"
-      >
-        全部商品分类
-      </h2>
-      <nav class="nav" @mouseleave="isSearchShow = false">
+    <div class="container" @mouseleave="isSearchShow = false">
+      <h2 class="all" @mouseenter="isSearchShow = true">全部商品分类</h2>
+      <nav class="nav">
         <a href="###">服装城</a>
         <a href="###">美妆馆</a>
         <a href="###">尚品汇超市</a>
@@ -21,11 +15,7 @@
       </nav>
       <transition name="search">
         <div class="sort" v-show="isHomeShow || isSearchShow">
-          <div
-            class="all-sort-list2"
-            @mouseenter="isSearchShow = true"
-            @mouseleave="isSearchShow = false"
-          >
+          <div class="all-sort-list2">
             <div
               class="item bo"
               v-for="lists in categoryList"
