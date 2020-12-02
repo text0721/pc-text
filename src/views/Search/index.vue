@@ -14,16 +14,30 @@
           </ul>
           <ul class="fl sui-tag">
             <li class="with-x" v-show="searchgoodList.keyword">
-              {{ searchgoodList.keyword }}<i @click="delKeyword">×</i>
+              关键字:{{ searchgoodList.keyword }}<i @click="delKeyword">×</i>
             </li>
             <li class="with-x" v-show="searchgoodList.categoryName">
-              {{ searchgoodList.categoryName }}<i @click="delCategoryName">×</i>
+              分类:{{ searchgoodList.categoryName
+              }}<i @click="delCategoryName">×</i>
             </li>
+            <li class="with-x" v-show="searchgoodList.trademark">
+              品牌:{{ searchgoodList.trademark.split(":")[1]
+              }}<i @click="delTrademark">×</i>
+            </li>
+            <li
+              class="with-x"
+              v-for="(prop, index) in searchgoodList.props"
+              :key="prop"
+            >
+              {{ prop.split(":")[2] }}:{{ prop.split(":")[1] }}
+              <i @click="delProp(index)">×</i>
+            </li>
+            <!-- <li class="with-x">属性:22222<i @click="delProp">×</i></li> -->
           </ul>
         </div>
 
         <!-- 选择商品的类别 -->
-        <SearchSelector />
+        <SearchSelector :addTrademark="addTrademark" @add-prop="addProp" />
 
         <!-- 具体商品列表导航 -->
         <div class="details clearfix">
@@ -31,22 +45,22 @@
             <div class="navbar-inner filter">
               <ul class="sui-nav">
                 <li class="active">
-                  <a href="#">综合</a>
+                  <a>综合</a>
                 </li>
                 <li>
-                  <a href="#">销量</a>
+                  <a>销量</a>
                 </li>
                 <li>
-                  <a href="#">新品</a>
+                  <a>新品</a>
                 </li>
                 <li>
-                  <a href="#">评价</a>
+                  <a>评价</a>
                 </li>
                 <li>
-                  <a href="#">价格⬆</a>
+                  <a>价格⬆</a>
                 </li>
                 <li>
-                  <a href="#">价格⬇</a>
+                  <a>价格⬇</a>
                 </li>
               </ul>
             </div>
@@ -58,7 +72,7 @@
                 <div class="list-wrap">
                   <div class="p-img">
                     <a href="item.html" target="_blank">
-                      <img :src="goods.defaultImg" @click="getGoodsDtail" />
+                      <img :src="goods.defaultImg" />
                     </a>
                   </div>
                   <div class="price">
@@ -142,7 +156,7 @@ export default {
   data() {
     return {
       searchgoodList: {
-        category1Id: "", // 一级分类id
+        category1Id: "1111", // 一级分类id
         category2Id: "", // 二级分类id
         category3Id: "", // 三级分类id
         categoryName: "", // 分类名称
@@ -177,7 +191,7 @@ export default {
       } = this.$route.query;
 
       const searchgoodList = {
-        ...this.goodList,
+        ...this.searchgoodList,
         keyword, //以下会覆盖掉上行最开始的初始化参数
         categoryName,
         category1Id,
@@ -197,6 +211,7 @@ export default {
         query: this.$route.query,
       });
     },
+
     //删除query参数的分类CategoryName
     delCategoryName() {
       this.searchgoodList.categoryName = "";
@@ -207,6 +222,26 @@ export default {
         name: "search",
         params: this.$route.params,
       });
+    },
+    // 添加品牌
+    addTrademark(trademark) {
+      this.searchgoodList.trademark = trademark;
+      this.updatePath();
+    },
+    //删除品牌
+    delTrademark() {
+      this.searchgoodList.trademark = "";
+      this.updatePath();
+    },
+    //添加品牌属性
+    addProp(prop) {
+      this.searchgoodList.props.push(prop);
+      this.updatePath();
+    },
+    //删除品牌属性
+    delProp(index) {
+      this.searchgoodList.props.splice(index, 1);
+      this.updatePath();
     },
   },
   watch: {
