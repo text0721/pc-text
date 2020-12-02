@@ -44,6 +44,12 @@ export default {
       searchText: "",
     };
   },
+  mounted() {
+    //定义清除searchText的函数
+    this.$bus.$on("clearKeyword", () => {
+      this.searchText = "";
+    });
+  },
   methods: {
     /*
         事件绑定在form中的原因：点击搜索，路径出现问号（原因是提交了表单）
@@ -77,8 +83,14 @@ export default {
       if (categoryName) {
         location.query = this.$route.query;
       }
-      //对象方式添加可选参数
-      this.$router.push(location); //重写push后可不报错
+      // 判断当前路径是否搜索，是就用replace方法，可以直接从搜索界面返回到首页
+      if (this.$route.name === "search") {
+        //对象方式添加可选参数
+        this.$router.replace(location); //重写push后可不报错
+      } else {
+        this.$router.push(location);
+      }
+
       // this.$router
       //   .push(location)
       //   .then((res) => {

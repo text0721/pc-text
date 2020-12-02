@@ -24,7 +24,7 @@ export default {
   },
   actions: {
     //默认接受回来一个空对象
-    async getDoodsList({ commit }, data = {}) {
+    async getGoodsList({ commit }, data = {}) {
       //使用await等待reDoodsList请求回来的具体数据，请求回来后调用mutation方法
       const allgoodsLists = await reDoodsList(data);
       commit("GET_DOODS_LIST", allgoodsLists);

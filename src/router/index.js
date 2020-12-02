@@ -6,6 +6,7 @@ import Home from "@views/Home";
 import Login from "@views/Login";
 import Register from "@views/Register";
 import Search from "@views/Search";
+import Detail from "@views/Detail";
 
 // 重写push和replace方法,为了让编程式导航重复点击时不报错
 const push = VueRouter.prototype.push;
@@ -56,6 +57,10 @@ export default new VueRouter({
       //后面加问号代表params参数是可选的
       path: "/search/:searchText?",
       component: Search,
+    },
+    {
+      path: "/detail/:id",
+      component: Detail,
     },
   ],
 });

@@ -139,6 +139,14 @@ export default {
       if (searchText) {
         location.params = { searchText };
       }
+      // 判断当前路径是否搜索，是就用replace方法，可以直接从搜索界面返回到首页
+      // 也可以用indexOf('/search') > -1、includes、startsWith、正则等方法
+      if (this.$route.name === "search") {
+        //对象方式添加可选参数
+        this.$router.replace(location); //重写push后可不报错
+      } else {
+        this.$router.push(location);
+      }
       this.$router.push(location);
     },
   },

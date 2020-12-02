@@ -13,10 +13,12 @@
             </li>
           </ul>
           <ul class="fl sui-tag">
-            <li class="with-x">手机</li>
-            <li class="with-x">iphone<i>×</i></li>
-            <li class="with-x">华为<i>×</i></li>
-            <li class="with-x">OPPO<i>×</i></li>
+            <li class="with-x" v-show="searchgoodList.keyword">
+              {{ searchgoodList.keyword }}<i @click="delKeyword">×</i>
+            </li>
+            <li class="with-x" v-show="searchgoodList.categoryName">
+              {{ searchgoodList.categoryName }}<i @click="delCategoryName">×</i>
+            </li>
           </ul>
         </div>
 
@@ -56,7 +58,7 @@
                 <div class="list-wrap">
                   <div class="p-img">
                     <a href="item.html" target="_blank">
-                      <img :src="goods.defaultImg" />
+                      <img :src="goods.defaultImg" @click="getGoodsDtail" />
                     </a>
                   </div>
                   <div class="price">
@@ -131,16 +133,93 @@
 import { mapGetters, mapActions } from "vuex";
 import SearchSelector from "@views/Search/SearchSelector";
 import TypeNav from "@comps/TypeNav";
+
+//引入获取商品详情的api方法
+// import { reqGoodsDtail } from "@api/home";
+
 export default {
   name: "Search",
+  data() {
+    return {
+      searchgoodList: {
+        category1Id: "", // 一级分类id
+        category2Id: "", // 二级分类id
+        category3Id: "", // 三级分类id
+        categoryName: "", // 分类名称
+        keyword: "", // 搜索内容（搜索关键字）
+        order: "", // 排序方式：1：综合排序  2：价格排序   asc 升序  desc 降序
+        pageNo: 1, // 分页的页码（第几页）
+        pageSize: 5, // 分页的每页商品数量
+        props: [], // 商品属性
+        trademark: "", // 品牌
+      },
+    };
+  },
   computed: {
     ...mapGetters(["goodsList"]),
   },
   methods: {
-    ...mapActions(["getDoodsList"]),
+    ...mapActions(["getGoodsList"]),
+    //点击后跳转到商品详情页面
+    getGoodsDtail() {
+      // reqGoodsDtail(this.id);
+      // this.$router.push("/detail")
+    },
+    //封装根据路径发送请求的函数
+    updatePath() {
+      //结构searchText，并重新更名为keyword
+      const { searchText: keyword } = this.$route.params;
+      const {
+        categoryName,
+        category1Id,
+        category2Id,
+        category3Id,
+      } = this.$route.query;
+
+      const searchgoodList = {
+        ...this.goodList,
+        keyword, //以下会覆盖掉上行最开始的初始化参数
+        categoryName,
+        category1Id,
+        category2Id,
+        category3Id,
+      };
+      this.searchgoodList = searchgoodList;
+      this.getGoodsList(searchgoodList);
+    },
+    // 删除关键字
+    delKeyword() {
+      this.searchgoodList.keyword = "";
+      // 清空header组件搜索内容的searchText，即keyword
+      this.$bus.$emit("clearKeyword");
+      this.$router.replace({
+        name: "search",
+        query: this.$route.query,
+      });
+    },
+    //删除query参数的分类CategoryName
+    delCategoryName() {
+      this.searchgoodList.categoryName = "";
+      this.searchgoodList.category1Id = "";
+      this.searchgoodList.category2Id = "";
+      this.searchgoodList.category3Id = "";
+      this.$router.replace({
+        name: "search",
+        params: this.$route.params,
+      });
+    },
+  },
+  watch: {
+    $route: {
+      //根据路径变化随时更新搜索请求
+      handler() {
+        this.updatePath();
+      },
+      immediate: true,
+    },
   },
   mounted() {
-    this.getDoodsList();
+    // this.updatePath(); //根据路径搜索商品，放在watch里面更方便，
   },
   components: {
     TypeNav,
