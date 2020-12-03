@@ -21,6 +21,9 @@ export default {
     goodsList(state) {
       return state.allgoodsLists.goodsList;
     },
+    total(state){
+      return state.allgoodsLists.total;
+    }
   },
   actions: {
     //默认接受回来一个空对象

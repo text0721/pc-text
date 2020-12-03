@@ -149,35 +149,40 @@
             </ul>
           </div>
           <!-- 分页器 -->
-          <div class="fr page">
-            <div class="sui-pagination clearfix">
-              <ul>
-                <li class="prev disabled">
-                  <a href="#">«上一页</a>
-                </li>
-                <li class="active">
-                  <a href="#">1</a>
-                </li>
-                <li>
-                  <a href="#">2</a>
-                </li>
-                <li>
-                  <a href="#">3</a>
-                </li>
-                <li>
-                  <a href="#">4</a>
-                </li>
-                <li>
-                  <a href="#">5</a>
-                </li>
-                <li class="dotted"><span>...</span></li>
-                <li class="next">
-                  <a href="#">下一页»</a>
-                </li>
-              </ul>
-              <div><span>共10页&nbsp;</span></div>
-            </div>
-          </div>
+          <!-- background
+            :page-size="9" 每页显示条目个数
+            page-sizes     每页显示个数选择器的选项设置
+            page-count     总页数
+            pager-count    页码按钮的数量，当总页数超过该值时会折叠
+            current-page   当前页数
+            layout="prev, pager, next" 组件布局
+            popper-class   每页显示个数选择器的下拉框类名
+            prev-text      替代图标显示的上一页文字
+            next-text      替代图标显示的下一页文字
+            :total="1000"
+            size-change    pageSize改变时会触发,每页条数
+            current-change  currentPage改变时会触发,当前页
+            prev-click
+            next-click
+             -->
+          <el-pagination
+            background
+            :page-size="5"
+            :page-sizes="[5, 10, 15, 20]"
+            :pager-count="7"
+            :current-page="searchgoodList.pageNo"
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            layout="
+              prev, 
+              pager, 
+              next,
+              total, 
+              sizes, 
+              jumper"
+            :total="total"
+          >
+          </el-pagination>
         </div>
       </div>
     </div>
@@ -213,7 +218,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["goodsList"]),
+    ...mapGetters(["goodsList", "total"]),
   },
   methods: {
     ...mapActions(["getGoodsList"]),
@@ -243,6 +248,7 @@ export default {
       };
       this.searchgoodList = searchgoodList;
       this.getGoodsList(searchgoodList);
+      console.log(this.$store);
     },
     // 删除关键字
     delKeyword() {
@@ -315,6 +321,16 @@ export default {
       }
       this.searchgoodList.order = `${order}:${orderType}`;
       this.updatePath();
+    },
+
+    // 当每页条数发生变化触发
+    handleSizeChange(pageSize) {
+      this.options.pageSize = pageSize;
+      this.updateProductList();
+    },
+    // 当页码发生变化触发
+    handleCurrentChange(pageNo) {
+      this.updateProductList(pageNo);
     },
   },
   watch: {
