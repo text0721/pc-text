@@ -7,7 +7,9 @@ import store from "./store";
 
 // 引入公共重置样式
 import "./style/reset.css";
-
+//引入font字体图标样式
+import "./style/iconfont.css";
+//引入ElementUi组件库
 import "./plugins/element.js";
 
 // 引入mockServer，为了加载里面代码

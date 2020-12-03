@@ -44,8 +44,23 @@
           <div class="sui-navbar">
             <div class="navbar-inner filter">
               <ul class="sui-nav">
-                <li class="active">
-                  <a>综合</a>
+                <!--setOrder传递的order是1就是综合排序，是2就是价格排序  -->
+                <li
+                  :class="{
+                    active: searchgoodList.order.indexOf('1') > -1,
+                  }"
+                >
+                  <a @click="setOrder(`1`)"
+                    >综合
+                    <i
+                      :class="{
+                        iconfont: true,
+                        'icon-xiangxia1': isAllDown,
+                        'icon-xiangshang1': !isAllDown,
+                      }"
+                    >
+                    </i>
+                  </a>
                 </li>
                 <li>
                   <a>销量</a>
@@ -56,11 +71,37 @@
                 <li>
                   <a>评价</a>
                 </li>
-                <li>
-                  <a>价格⬆</a>
-                </li>
-                <li>
-                  <a>价格⬇</a>
+                <li
+                  :class="{
+                    active: searchgoodList.order.indexOf('2') > -1,
+                  }"
+                  @click="setOrder(`2`)"
+                >
+                  <a class="font"
+                    >价格
+                    <span>
+                      <!-- searchgoodList.order.indexOf('2') > -1 判断两者上下键都是显示的 -->
+                      <!-- isPriceDown判断到底那个是被激活的 -->
+                      <i
+                        :class="{
+                          iconfont: true,
+                          'icon-xiangshang': true,
+                          deactive:
+                            searchgoodList.order.indexOf('2') > -1 &&
+                            isPriceDown,
+                        }"
+                      ></i>
+                      <i
+                        :class="{
+                          iconfont: true,
+                          'icon-xiangxia': true,
+                          deactive:
+                            searchgoodList.order.indexOf('2') > -1 &&
+                            !isPriceDown,
+                        }"
+                      ></i>
+                    </span>
+                  </a>
                 </li>
               </ul>
             </div>
@@ -161,12 +202,14 @@ export default {
         category3Id: "", // 三级分类id
         categoryName: "", // 分类名称
         keyword: "", // 搜索内容（搜索关键字）
-        order: "", // 排序方式：1：综合排序  2：价格排序   asc 升序  desc 降序
+        order: "1:desc", // 排序方式：1：综合排序  2：价格排序   asc 升序  desc 降序
         pageNo: 1, // 分页的页码（第几页）
         pageSize: 5, // 分页的每页商品数量
         props: [], // 商品属性
         trademark: "", // 品牌
       },
+      isAllDown: true, //综合排序默认降序
+      isPriceDown: false, //价格排序默认升序
     };
   },
   computed: {
@@ -211,7 +254,6 @@ export default {
         query: this.$route.query,
       });
     },
-
     //删除query参数的分类CategoryName
     delCategoryName() {
       this.searchgoodList.categoryName = "";
@@ -241,6 +283,37 @@ export default {
     //删除品牌属性
     delProp(index) {
       this.searchgoodList.props.splice(index, 1);
+      this.updatePath();
+    },
+
+    //设置商品排序的方式：默认综合排序，降序 1:desc
+    setOrder(order) {
+      //如果传入的order是1，表示是进入的综合排序
+      //如果传入的order是2，表示是进入的价格排序
+      let [orderNum, orderType] = this.searchgoodList.order.split(":");
+      //传递的参数是字符串格式，记得不要写成num格式的了
+
+      if (order === "1") {
+        //判断是综合排序时，如果order=orderNum，则表示是综合排序重复点击，排序跟图标都要取反
+        // 如果不等，表示是第一次点击，保持跟图标isAllDown一致就行
+        if (order === orderNum) {
+          this.isAllDown = !this.isAllDown;
+          orderType = orderType === "desc" ? "asc" : "desc";
+        } else {
+          orderType = this.isAllDown ? "desc" : "asc";
+        }
+      } else {
+        //判断当前是价格排序时，如果order=orderNum，表示是价格排序重复点击,排序跟图标都要取反
+        //如果不等，就表示是第一次点击，默认价格升序，显示升序图标
+        if (order === orderNum) {
+          this.isPriceDown = !this.isPriceDown;
+          orderType = orderType === "desc" ? "asc" : "desc";
+        } else {
+          this.isPriceDown = false;
+          orderType = "asc";
+        }
+      }
+      this.searchgoodList.order = `${order}:${orderType}`;
       this.updatePath();
     },
   },
@@ -370,9 +443,28 @@ export default {
                 padding: 11px 15px;
                 color: #777;
                 text-decoration: none;
+                i {
+                  font-size: 14px;
+                }
+              }
+              .font {
+                display: flex;
+                span {
+                  display: flex;
+                  flex-direction: column;
+                  line-height: 10px;
+                  i {
+                    font-size: 12px;
+                    &.deactive {
+                      color: rgba(255, 255, 255, 0.4);
+                    }
+                  }
+                }
               }
 
               &.active {
+                display: flex;
+                justify-content: space-around;
                 a {
                   background: #e1251b;
                   color: #fff;
