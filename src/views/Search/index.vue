@@ -47,7 +47,7 @@
                 <!--setOrder传递的order是1就是综合排序，是2就是价格排序  -->
                 <li
                   :class="{
-                    active: searchgoodList.order.indexOf('1') > -1,
+                    active: setOrderType('1'),
                   }"
                 >
                   <a @click="setOrder(`1`)"
@@ -73,7 +73,7 @@
                 </li>
                 <li
                   :class="{
-                    active: searchgoodList.order.indexOf('2') > -1,
+                    active: setOrderType('2'),
                   }"
                   @click="setOrder(`2`)"
                 >
@@ -86,18 +86,14 @@
                         :class="{
                           iconfont: true,
                           'icon-xiangshang': true,
-                          deactive:
-                            searchgoodList.order.indexOf('2') > -1 &&
-                            isPriceDown,
+                          deactive: setOrderType('2') && isPriceDown,
                         }"
                       ></i>
                       <i
                         :class="{
                           iconfont: true,
                           'icon-xiangxia': true,
-                          deactive:
-                            searchgoodList.order.indexOf('2') > -1 &&
-                            !isPriceDown,
+                          deactive: setOrderType('2') && !isPriceDown,
                         }"
                       ></i>
                     </span>
@@ -112,9 +108,9 @@
               <li class="yui3-u-1-5" v-for="goods in goodsList" :key="goods.id">
                 <div class="list-wrap">
                   <div class="p-img">
-                    <a href="item.html" target="_blank">
+                    <router-link target="_blank" :to="`/detail/${goods.id}`">
                       <img :src="goods.defaultImg" />
-                    </a>
+                    </router-link>
                   </div>
                   <div class="price">
                     <strong>
@@ -123,11 +119,11 @@
                     </strong>
                   </div>
                   <div class="attr">
-                    <a
+                    <router-link
+                      :to="`/detail/${goods.id}`"
                       target="_blank"
-                      href="item.html"
                       title="促销信息，下单即赠送三个月CIBN视频会员卡！【小米电视新品4A 58 火爆预约中】"
-                      >{{ goods.title }}</a
+                      >{{ goods.title }}</router-link
                     >
                   </div>
                   <div class="commit">
@@ -149,6 +145,13 @@
             </ul>
           </div>
           <!-- 分页器 -->
+          <Pagination
+            @current-change="handleCurrentChange"
+            :current-page="searchgoodList.pageNo"
+            :pager-count="7"
+            :page-size="5"
+            :total="total"
+          />
           <!-- background
             :page-size="9" 每页显示条目个数
             page-sizes     每页显示个数选择器的选项设置
@@ -164,8 +167,8 @@
             current-change  currentPage改变时会触发,当前页
             prev-click
             next-click
-             -->
-          <el-pagination
+          -->
+          <!-- <el-pagination
             background
             :page-size="5"
             :page-sizes="[5, 10, 15, 20]"
@@ -182,7 +185,7 @@
               jumper"
             :total="total"
           >
-          </el-pagination>
+          </el-pagination> -->
         </div>
       </div>
     </div>
@@ -190,9 +193,10 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from "vuex";
+import { mapState, mapGetters, mapActions } from "vuex";
 import SearchSelector from "@views/Search/SearchSelector";
 import TypeNav from "@comps/TypeNav";
+import Pagination from "@comps/Pagination";
 
 //引入获取商品详情的api方法
 // import { reqGoodsDtail } from "@api/home";
@@ -218,15 +222,15 @@ export default {
     };
   },
   computed: {
+    ...mapState({
+      //记得把值的结果return
+      goodsDetail: (state) => state.detail.goodsDetail,
+    }),
     ...mapGetters(["goodsList", "total"]),
   },
   methods: {
     ...mapActions(["getGoodsList"]),
-    //点击后跳转到商品详情页面
-    getGoodsDtail() {
-      // reqGoodsDtail(this.id);
-      // this.$router.push("/detail")
-    },
+
     //封装根据路径发送请求的函数
     updatePath() {
       //结构searchText，并重新更名为keyword
@@ -248,7 +252,7 @@ export default {
       };
       this.searchgoodList = searchgoodList;
       this.getGoodsList(searchgoodList);
-      console.log(this.$store);
+      // console.log(this.$store);
     },
     // 删除关键字
     delKeyword() {
@@ -273,6 +277,8 @@ export default {
     },
     // 添加品牌
     addTrademark(trademark) {
+      //判断如果品牌存在就不再重新发请求
+      if (this.searchgoodList.trademark) return;
       this.searchgoodList.trademark = trademark;
       this.updatePath();
     },
@@ -283,6 +289,8 @@ export default {
     },
     //添加品牌属性
     addProp(prop) {
+      //判断如果品牌属性存在就不能再继续添加
+      if (this.searchgoodList.props.indexOf(prop) > -1) return;
       this.searchgoodList.props.push(prop);
       this.updatePath();
     },
@@ -322,6 +330,10 @@ export default {
       this.searchgoodList.order = `${order}:${orderType}`;
       this.updatePath();
     },
+    //封装判断排序是以什么开头，是综合排序还是价格排序
+    setOrderType(order) {
+      return this.searchgoodList.order.indexOf(order) > -1;
+    },
 
     // 当每页条数发生变化触发
     handleSizeChange(pageSize) {
@@ -348,6 +360,7 @@ export default {
   components: {
     TypeNav,
     SearchSelector,
+    Pagination,
   },
 };
 </script>
