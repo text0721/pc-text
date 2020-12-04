@@ -124,18 +124,18 @@ export default {
       // 正常情况
       //结束值 = 开始值 + (所有页码总数 - 2 ) -1
       end = start + middleCount - 1;
-      if (end >= totalPages) {
-        // 1 [2] 3
-        end = totalPages - 1;
-      }
-      // if (myCurrentPage >= pagerCount / 2 + 1) {
-      //   end = totalPages - 1;
-      // }
-
       // if (end >= totalPages) {
       //   // 1 [2] 3
       //   end = totalPages - 1;
       // }
+      // if (myCurrentPage >= pagerCount / 2 + 1) {
+      //   end = totalPages - 1;
+      // }
+
+      if (end >= totalPages) {
+        // 1 [2] 3
+        end = totalPages - 1;
+      }
 
       // 返回计算结果
       return {
