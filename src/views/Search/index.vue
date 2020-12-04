@@ -232,7 +232,7 @@ export default {
     ...mapActions(["getGoodsList"]),
 
     //封装根据路径发送请求的函数
-    updatePath() {
+    updatePath(pageNo = 1) {
       //结构searchText，并重新更名为keyword
       const { searchText: keyword } = this.$route.params;
       const {
@@ -249,6 +249,7 @@ export default {
         category1Id,
         category2Id,
         category3Id,
+        pageNo,
       };
       this.searchgoodList = searchgoodList;
       this.getGoodsList(searchgoodList);
@@ -338,11 +339,11 @@ export default {
     // 当每页条数发生变化触发
     handleSizeChange(pageSize) {
       this.options.pageSize = pageSize;
-      this.updateProductList();
+      this.updatePath();
     },
     // 当页码发生变化触发
     handleCurrentChange(pageNo) {
-      this.updateProductList(pageNo);
+      this.updatePath(pageNo);
     },
   },
   watch: {

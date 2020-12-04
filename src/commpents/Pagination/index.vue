@@ -1,22 +1,42 @@
 <template>
   <div class="pagination">
-    <button>上一页</button>
-    <button @click="setmyCurrentPage(1)">1</button>
+    <button
+      @click="setmyCurrentPage(myCurrentPage - 1)"
+      :disabled="myCurrentPage <= 1"
+    >
+      上一页
+    </button>
+    <button
+      @click="setmyCurrentPage(1)"
+      :class="{ active: myCurrentPage === 1 }"
+    >
+      1
+    </button>
     <button v-show="startEnd.start > 2">...</button>
 
     <button
       v-for="item in mapBtnsCount"
       :key="item"
       @click="setmyCurrentPage(startEnd.start + item - 1)"
+      :class="{ active: myCurrentPage === startEnd.start + item - 1 }"
     >
       {{ startEnd.start + item - 1 }}
     </button>
 
-    <button>...</button>
-    <button @click="setmyCurrentPage(totalPages)">
+    <button v-show="startEnd.end < totalPages - 1">...</button>
+    <button
+      @click="setmyCurrentPage(totalPages)"
+      v-show="totalPages > 1"
+      :class="{ active: myCurrentPage === totalPages }"
+    >
       {{ totalPages }}
     </button>
-    <button>下一页</button>
+    <button
+      :disabled="myCurrentPage >= totalPages"
+      @click="setmyCurrentPage(myCurrentPage + 1)"
+    >
+      下一页
+    </button>
     <button>总数：{{ total }}</button>
   </div>
 </template>
@@ -86,14 +106,14 @@ export default {
 
       //如果当前点击的按钮数 >= 总显示的页码数 - 中间页码数的一半
       //即点击至末尾时，即myCurrentPage是偏末尾时，正常的start值应该是总页码-中间值一半
-      // if (myCurrentPage >= totalPages - halfCount) {
-      //   // 1 ... 5 6 7 8 [9] 10
-      //   //开始值 = 总页码数 - (所有页码总数 - 2 )
-      //   start = totalPages - middleCount;
-      // } else {
-      //   // 正常情况
-      //   start = myCurrentPage - halfCount;
-      // }
+      if (myCurrentPage >= totalPages - halfCount) {
+        // 1 ... 5 6 7 8 [9] 10
+        //开始值 = 总页码数 - (所有页码总数 - 2 )
+        start = totalPages - middleCount;
+      } else {
+        // 正常情况
+        start = myCurrentPage - halfCount;
+      }
       start = myCurrentPage - halfCount;
 
       if (start <= 1) {
