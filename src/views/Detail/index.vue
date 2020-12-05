@@ -16,9 +16,22 @@
         <!-- 左侧放大镜区域 -->
         <div class="previewWrap">
           <!--放大镜效果-->
-          <Zoom />
+          <!-- 将点击小图时获取的img下标再传递主图区域 -->
+          <!-- 直接传递会报错，因为页面渲染是异步的，开始是没有数据图片的 -->
+          <!-- <Zoom
+            :MidImgUrl="skuInfo.skuImageList[imgIndex].imgUrl"
+            :BigImgUrl="skuInfo.skuImageList[imgIndex].imgUrl"
+          /> -->
+          <Zoom
+            :MidImgUrl="
+              skuInfo.skuImageList && skuInfo.skuImageList[imgIndex].imgUrl
+            "
+            :BigImgUrl="
+              skuInfo.skuImageList && skuInfo.skuImageList[imgIndex].imgUrl
+            "
+          />
           <!-- 小图列表 -->
-          <ImageList />
+          <ImageList :updateImgIndex="updateImgIndex" />
         </div>
         <!-- 右侧选择区域布局 -->
         <div class="InfoWrap">
@@ -347,11 +360,20 @@ export default {
     }),
     ...mapGetters(["categoryView", "skuInfo", "spuSaleAttrList"]),
   },
+  data() {
+    return {
+      imgIndex: 0,
+    };
+  },
   methods: {
     ...mapActions(["getGoodsDetail"]),
+    //设置更新index的方法，小图点击后获取index再传给大图和中图分别显示对应的图片
+    updateImgIndex(index) {
+      this.imgIndex = index;
+    },
   },
   mounted() {
-    this.getGoodsDetail(this.$route.params.id)
+    this.getGoodsDetail(this.$route.params.id);
   },
   components: {
     ImageList,

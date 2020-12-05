@@ -1,10 +1,16 @@
 <template>
   <div class="spec-preview">
-    <img :src="skuInfo.skuDefaultImg" />
+    <!-- 默认图片区 -->
+    <img :src="MidImgUrl" />
+
     <div class="event"></div>
+
+    <!-- 大图区域 -->
     <div class="big">
-      <img src="../images/s1.png" />
+      <img :src="BigImgUrl" />
     </div>
+
+    <!-- 蒙版区 -->
     <div class="mask"></div>
   </div>
 </template>
@@ -16,6 +22,10 @@ export default {
   name: "Zoom",
   computed: {
     ...mapGetters(["skuInfo"]),
+  },
+  props: {
+    MidImgUrl: String,
+    BigImgUrl: String,
   },
 };
 </script>

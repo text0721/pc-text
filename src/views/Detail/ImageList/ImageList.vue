@@ -1,12 +1,12 @@
 <template>
-  <div class="swiper-container">
+  <div class="swiper-container" ref="swiper">
     <div class="swiper-wrapper">
       <div
         class="swiper-slide"
-        v-for="skuImg in skuInfo.skuImageList"
+        v-for="(skuImg, index) in skuInfo.skuImageList"
         :key="skuImg.id"
       >
-        <img :src="skuImg.imgUrl" />
+        <img :src="skuImg.imgUrl" @click="updateImgIndex(index)" />
       </div>
     </div>
     <div class="swiper-button-next"></div>
@@ -17,11 +17,35 @@
 <script>
 import { mapGetters } from "vuex";
 
-// import Swiper from 'swiper'
+import Swiper, { Navigation } from "swiper";
+
+Swiper.use([Navigation]);
+
 export default {
   name: "ImageList",
   computed: {
     ...mapGetters(["skuInfo"]),
+  },
+  props: {
+    updateImgIndex: Function,
+  },
+  watch: {
+    skuInfo() {
+      //监视异步请求的数据是否已经回来，开始是没数据，回来数据就触发
+      //nextTick就会等页面渲染更新之后就触发，此时才可以new swiper
+      this.$nextTick(() => {
+        //  使用refs属性可以避免组件使用其他问题：this.$refs.swiper
+        new Swiper(this.$refs.swiper, {
+          slidesPerView: 5, // 每页显示轮播图的数量
+          spaceBetween: 30, // 轮播图的间距
+          slidesPerGroup: 5, // 每次换轮播图的数量
+          navigation: {
+            nextEl: ".swiper-button-next",
+            prevEl: ".swiper-button-prev",
+          },
+        });
+      });
+    },
   },
 };
 </script>
