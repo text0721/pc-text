@@ -102,11 +102,16 @@
             </div>
             <div class="cartWrap">
               <div class="controls">
-                <input autocomplete="off" class="itxt" />
-                <a href="javascript:" class="plus">+</a>
-                <a href="javascript:" class="mins">-</a>
+                <el-input-number
+                  class="input-number"
+                  type="number"
+                  v-model="skuNum"
+                  controls-position="right"
+                  :min="1"
+                  :max="100"
+                ></el-input-number>
               </div>
-              <div class="add">
+              <div class="add" @click="addCartList()">
                 <a href="javascript:">加入购物车</a>
               </div>
             </div>
@@ -363,13 +368,28 @@ export default {
   data() {
     return {
       imgIndex: 0,
+      skuNum: 1,
     };
   },
   methods: {
-    ...mapActions(["getGoodsDetail"]),
+    ...mapActions(["getGoodsDetail", "updateCartCount"]),
     //设置更新index的方法，小图点击后获取index再传给大图和中图分别显示对应的图片
     updateImgIndex(index) {
       this.imgIndex = index;
+    },
+    //添加至购物车，发送请求更改后端数据成功后,再跳转
+    async addCartList() {
+      try {
+        //actions方法默认只能接受1个参数，当有多个参数的时候，只能用对象传递，store中用结构赋值
+        await this.updateCartCount({
+          skuId: this.skuInfo.id,
+          skuNum: this.skuNum,
+        });
+        //只能等待添加购物车成功才能跳转，否则不跳转
+        this.$router.push(`/addcartsuccess?skuNum=${this.skuNum}`);
+      } catch (err) {
+        window.confirm(err);
+      }
     },
   },
   mounted() {
@@ -552,6 +572,10 @@ export default {
               float: left;
               margin-right: 15px;
 
+              .input-number {
+                width: 150px;
+              }
+
               .itxt {
                 width: 38px;
                 height: 37px;
@@ -588,6 +612,7 @@ export default {
 
             .add {
               float: left;
+              margin-left: 88px;
 
               a {
                 background-color: #e1251b;
@@ -597,6 +622,7 @@ export default {
                 height: 36px;
                 line-height: 36px;
                 display: block;
+                height: 39px;
               }
             }
           }

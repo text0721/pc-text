@@ -7,6 +7,8 @@ import Login from "@views/Login";
 import Register from "@views/Register";
 import Search from "@views/Search";
 import Detail from "@views/Detail";
+import AddCartSuccess from "@views/AddCartSuccess";
+import ShopCart from "@views/ShopCart";
 
 // 重写push和replace方法,为了让编程式导航重复点击时不报错
 const push = VueRouter.prototype.push;
@@ -61,6 +63,16 @@ export default new VueRouter({
     {
       path: "/detail/:id",
       component: Detail,
+    },
+    {
+      //添加到购物车页面成功状态
+      path: "/addcartsuccess",
+      component: AddCartSuccess,
+    },
+    {
+      //跳转至购物车列表
+      path: "/shopcart",
+      component: ShopCart,
     },
   ],
   // 设置每次切换路由时，页面滚动条的位置
