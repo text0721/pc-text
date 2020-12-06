@@ -1,23 +1,40 @@
 import axios from "axios";
 
 import { Message } from "element-ui";
+//引入临时用户的id放在请求头上面，以此获取购物车信息
+import getUserTempId from "@utils/getUserTempId";
+
 // 引入进度条插件
 import NProgress from "nprogress";
 import "nprogress/nprogress.css";
 
+//引入生成唯一id的库
+import { v4 as uuidv4 } from "uuid";
+
+//在第一次发送请求，做拦截器处理的时候就生成未登录用户的临时id
+// 每个userid都有自己对应的购物车数据，要存储在localStorage中永久存储
+uuidv4();
 const instance = axios.create({
   // baseURL: "http://182.92.128.115/api/",
-  baseURL: "/api",//数据代理后
+  baseURL: "/api", //数据代理后
   header: {
     // token: '' // 不可以设置公共参数，此项目登录注册接口不需要
   },
 });
+
+//请求之前缓存一份，这样以后请求都是读取的内存
+const userTempId = getUserTempId();
 
 //设置请求拦截器
 instance.interceptors.request.use(
   (config) => {
     // 开始进度条
     NProgress.start();
+
+    // 开始请求的时候携带唯一的id，方便后面获取该id的购物车列表
+    // const userTempId = getUserTempId();放到外面缓存，免得每次请求都判断一次
+    config.headers.userTempId = userTempId;
+
     return config;
   }
   //本来应该还有失败的回调
@@ -50,8 +67,8 @@ instance.interceptors.response.use(
     NProgress.done();
     //响应失败就直接返回失败的promise
     const message = err.message || "网络异常";
-     // 提示错误
-     Message.error(message);
+    // 提示错误
+    Message.error(message);
     return Promise.reject(message);
   }
 );
