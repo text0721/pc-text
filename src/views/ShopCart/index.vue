@@ -17,7 +17,8 @@
               <input
                 type="checkbox"
                 name="chk_list"
-                :checked="cart.isChecked"
+                v-model="cart.isChecked"
+                @change="updateIsChecked(cart.skuId, cart.isChecked)"
               />
             </li>
             <li class="cart-list-con2">
@@ -33,7 +34,12 @@
               <span class="price">{{ cart.skuPrice }}</span>
             </li>
             <li class="cart-list-con5">
-              <a href="javascript:void(0)" class="mins">-</a>
+              <a
+                href="javascript:void(0)"
+                class="mins"
+                @click="updateChartCount(cart.skuId, -1)"
+                >-</a
+              >
               <input
                 autocomplete="off"
                 type="text"
@@ -41,13 +47,18 @@
                 minnum="1"
                 class="itxt"
               />
-              <a href="javascript:void(0)" class="plus">+</a>
+              <a
+                href="javascript:void(0)"
+                class="plus"
+                @click="updateChartCount(cart.skuId, 1)"
+                >+</a
+              >
             </li>
             <li class="cart-list-con6">
               <span class="sum">{{ cart.skuNum * cart.skuPrice }}</span>
             </li>
             <li class="cart-list-con7">
-              <a href="#none" class="sindelet">删除</a>
+              <a class="sindelet" @click="delCart(cart.skuId)">删除</a>
               <br />
               <a href="#none">移到收藏</a>
             </li>
@@ -65,13 +76,16 @@
           <a href="#none">清除下柜商品</a>
         </div>
         <div class="money-box">
-          <div class="chosed">已选择 <span>0</span>件商品</div>
+          <div class="chosed">
+            已选择 <span>{{ totalNum }}</span
+            >件商品
+          </div>
           <div class="sumprice">
             <em>总价（不含运费） ：</em>
-            <i class="summoney">0</i>
+            <i class="summoney">{{ totalPrice }}</i>
           </div>
           <div class="sumbtn">
-            <a class="sum-btn" href="###" target="_blank">结算</a>
+            <a class="sum-btn" target="_blank">结算</a>
           </div>
         </div>
       </div>
@@ -87,12 +101,47 @@ export default {
     ...mapState({
       cartList: (state) => state.shopcart.cartList,
     }),
+    //计算已选中的商品总数量
+    totalNum() {
+      return this.cartList
+        .filter((cart) => cart.isChecked === 1)
+        .reduce((p, c) => p + c.skuNum, 0);
+    },
+    //计算已选中商品的总价
+    totalPrice() {
+      return this.cartList
+        .filter((cart) => cart.isChecked === 1)
+        .reduce((p, c) => p + c.skuNum * c.skuPrice, 0);
+    },
+  },
+  data() {
+    return {};
   },
   methods: {
-    ...mapActions(["getShopCart"]),
+    ...mapActions([
+      "getShopCart",
+      "updateCartCount",
+      "updateCartChecked",
+      "delShopCart",
+    ]),
+    //加减更新商品数量
+    async updateChartCount(skuId, skuNum) {
+      //一定记得多个参数要用对象的方式传递过去
+      await this.updateCartCount({ skuId, skuNum });
+      this.getShopCart();
+    },
+    //切换更改商品是否选中
+    updateIsChecked(skuId, isChecked) {
+      // console.log(skuId, isChecked);
+      this.updateCartChecked({ skuId, isChecked });
+    },
+    //删除单个商品
+    delCart(skuId) {
+      this.delShopCart(skuId);
+    },
   },
-  mounted() {
-    this.getShopCart();
+  async mounted() {
+    await this.getShopCart();
   },
 };
 </script>

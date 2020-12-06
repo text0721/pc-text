@@ -24,15 +24,14 @@ export default {
     },
     //请求修改商品是否选中，无返回值
     async updateCartChecked({ commit }, { skuId, isChecked }) {
+      // console.log(skuId, isChecked);
       await reqUpdateCartChecked(skuId, isChecked);
-      console.log(commit);
-      // commit("UPDATE_CART_CHECKED", { skuId, isChecked });
+      commit("UPDATE_CART_CHECKED", { skuId, isChecked });
     },
     //请求删除某购物车列表，无返回值
     async delShopCart({ commit }, skuId) {
       await reqDelShopCart(skuId);
-      console.log(commit);
-      // commit("DEL_SHOP_CART", skuId);
+      commit("DEL_SHOP_CART", skuId);
     },
   },
   mutations: {
@@ -46,6 +45,18 @@ export default {
         }
         return cart;
       });
+    },
+    UPDATE_CART_CHECKED(state, { skuId, isChecked }) {
+      // console.log(skuId, isChecked);
+      state.cartList = state.cartList.map((cart) => {
+        if (cart.skuId === skuId) {
+          cart.isChecked = isChecked == true ? 0 : 1;
+        }
+        return cart;
+      });
+    },
+    DEL_SHOP_CART(state, skuId) {
+      state.cartList = state.cartList.filter((cart) => cart.skuId !== skuId);
     },
   },
 };

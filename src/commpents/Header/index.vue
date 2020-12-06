@@ -12,7 +12,7 @@
         </div>
         <div class="head-nav-right">
           <router-link to="/shop-order">我的订单</router-link>
-          <router-link to="/shop-cart">我的购物车</router-link>
+          <router-link to="/shopcart">我的购物车</router-link>
           <router-link to="/my-home">我的尚品汇</router-link>
           <router-link to="/my-vip">尚品汇会员</router-link>
           <router-link to="/com-buy">企业采购</router-link>
