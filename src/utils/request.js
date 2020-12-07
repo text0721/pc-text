@@ -11,15 +11,11 @@ import store from "../store";
 import NProgress from "nprogress";
 import "nprogress/nprogress.css";
 
-//引入生成唯一id的库
-import { v4 as uuidv4 } from "uuid";
-
 //在第一次发送请求，做拦截器处理的时候就生成未登录用户的临时id
 // 每个userid都有自己对应的购物车数据，要存储在localStorage中永久存储
 
 //请求之前缓存一份，这样以后请求都是读取的内存
 const userTempId = getUserTempId();
-const token = store.user.token;
 
 const instance = axios.create({
   // baseURL: "http://182.92.128.115/api/",
@@ -35,6 +31,7 @@ instance.interceptors.request.use(
     // 开始进度条
     NProgress.start();
 
+    const token = store.state.user.token;
     //判断token存在不存在，存在就和临时Id一起传递，后台会自动合并购物车等数据
     if (token) {
       config.headers.token = token;
