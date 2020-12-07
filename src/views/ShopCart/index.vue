@@ -17,8 +17,8 @@
               <input
                 type="checkbox"
                 name="chk_list"
-                v-model="cart.isChecked"
-                @change="updateIsChecked(cart.skuId, cart.isChecked)"
+                :checked="cart.isChecked"
+                @change="updateIsChecked(cart.skuId, !cart.isChecked)"
               />
             </li>
             <li class="cart-list-con2">
@@ -34,25 +34,28 @@
               <span class="price">{{ cart.skuPrice }}</span>
             </li>
             <li class="cart-list-con5">
-              <a
+              <button
                 href="javascript:void(0)"
                 class="mins"
+                :disabled="cart.skuNum < 2"
                 @click="updateChartCount(cart.skuId, -1)"
-                >-</a
               >
+                -
+              </button>
               <input
                 autocomplete="off"
-                type="text"
+                type="number"
                 :value="cart.skuNum"
                 minnum="1"
                 class="itxt"
               />
-              <a
+              <button
                 href="javascript:void(0)"
                 class="plus"
                 @click="updateChartCount(cart.skuId, 1)"
-                >+</a
               >
+                +
+              </button>
             </li>
             <li class="cart-list-con6">
               <span class="sum">{{ cart.skuNum * cart.skuPrice }}</span>
@@ -67,7 +70,7 @@
       </div>
       <div class="cart-tool">
         <div class="select-all">
-          <input class="chooseAll" type="checkbox" />
+          <input class="chooseAll" type="checkbox" v-model="AllChecked" />
           <span>全选</span>
         </div>
         <div class="option">
@@ -94,13 +97,14 @@
 </template>
 
 <script>
-import { mapState, mapActions } from "vuex";
+import { mapState, mapGetters, mapActions } from "vuex";
 export default {
   name: "ShopCart",
   computed: {
     ...mapState({
       cartList: (state) => state.shopcart.cartList,
     }),
+    ...mapGetters(["AllIsChecked"]),
     //计算已选中的商品总数量
     totalNum() {
       return this.cartList
@@ -113,9 +117,16 @@ export default {
         .filter((cart) => cart.isChecked === 1)
         .reduce((p, c) => p + c.skuNum * c.skuPrice, 0);
     },
-  },
-  data() {
-    return {};
+
+    //设置全选按钮，计算input的值
+    AllChecked: {
+      get() {
+        return this.AllIsChecked === this.cartList.length;
+      },
+      set(isChecked) {
+        this.$store.commit("ALL_CART_CHECKED", isChecked);
+      },
+    },
   },
   methods: {
     ...mapActions([
@@ -128,20 +139,18 @@ export default {
     async updateChartCount(skuId, skuNum) {
       //一定记得多个参数要用对象的方式传递过去
       await this.updateCartCount({ skuId, skuNum });
-      this.getShopCart();
     },
     //切换更改商品是否选中
     updateIsChecked(skuId, isChecked) {
-      // console.log(skuId, isChecked);
-      this.updateCartChecked({ skuId, isChecked });
+      this.updateCartChecked({ skuId, isChecked: isChecked ? 1 : 0 });
     },
     //删除单个商品
     delCart(skuId) {
       this.delShopCart(skuId);
     },
   },
-  async mounted() {
-    await this.getShopCart();
+  mounted() {
+    this.getShopCart();
   },
 };
 </script>

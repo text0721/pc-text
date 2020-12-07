@@ -17,10 +17,10 @@ export const reqUpdateCartCount = (skuID, skuNum) => {
 };
 
 //切换商品选中状态
-export const reqUpdateCartChecked = (skuID, isChecked) => {
+export const reqUpdateCartChecked = (skuId, isChecked) => {
   return request({
     method: "GET",
-    url: `/cart/checkCart/${skuID}/${isChecked}`,
+    url: `/cart/checkCart/${skuId}/${isChecked}`,
   });
 };
 

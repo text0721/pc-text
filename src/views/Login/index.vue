@@ -104,8 +104,11 @@ export default {
 
 <style lang="less" scoped>
 .login-container {
+  width: 100%;
   .login-wrap {
     height: 487px;
+    width: 100%;
+    min-width: 1200px;
     background-color: #e93854;
 
     .login {
