@@ -10,30 +10,62 @@
       </h3>
       <div class="content">
         <label>手机号:</label>
-        <input type="text" placeholder="请输入你的手机号" />
-
-        <span class="error-msg">错误提示信息</span>
+        <validation-provider rules="phone|length|required" v-slot="{ errors }">
+          <input
+            type="text"
+            placeholder="请输入你的手机号"
+            v-model="user.phone"
+          />
+          <span class="error-msg">{{ errors[0] }}</span>
+        </validation-provider>
       </div>
       <div class="content">
         <label>验证码:</label>
-        <input type="text" placeholder="请输入验证码" name="code" />
-        <img ref="code" src="xxx" alt="code" />
-        <span class="error-msg">错误提示信息</span>
+        <validation-provider rules="code" v-slot="{ errors }">
+          <input
+            type="text"
+            placeholder="请输入验证码"
+            name="code"
+            v-model="user.code"
+          />
+          <!-- 获取验证码的是图片，每次发送请求更新图片src就是重新获取验证码了 -->
+          <img
+            ref="code"
+            src="http://182.92.128.115/api/user/passport/code"
+            alt="code"
+            @click="refreshCode"
+          />
+          <span class="error-msg">{{ errors[0] }}</span>
+        </validation-provider>
       </div>
       <div class="content">
         <label>登录密码:</label>
-        <input type="text" placeholder="请输入你的登录密码" name="密码" />
-        <span class="error-msg">错误提示信息</span>
+        <validation-provider rules="password" v-slot="{ errors }">
+          <input
+            type="text"
+            placeholder="请输入你的登录密码"
+            name="密码"
+            v-model="user.password"
+          />
+          <span class="error-msg">{{ errors[0] }}</span>
+        </validation-provider>
       </div>
       <div class="content">
         <label>确认密码:</label>
-        <input type="text" placeholder="请输入确认密码" name="确认密码" />
-        <span class="error-msg">错误提示信息</span>
+        <validation-provider rules="password" v-slot="{ errors }">
+          <input
+            type="text"
+            placeholder="请输入确认密码"
+            name="确认密码"
+            v-model="user.repassword"
+          />
+          <span class="error-msg">{{ errors[0] }}</span>
+        </validation-provider>
       </div>
       <div class="controls">
-        <input type="checkbox" name="协议" />
+        <input type="checkbox" name="协议" v-model="user.isAgreen" />
         <span>同意协议并注册《尚品汇用户协议》</span>
-        <span class="error-msg">错误提示信息</span>
+        <!-- <span class="error-msg" v-if="!user.isAgreen">请同意相关协议</span> -->
       </div>
       <div class="btn">
         <button>完成注册</button>
@@ -59,8 +91,82 @@
 </template>
 
 <script>
+//引入VeeValidate校验,组件实例注册ValidationProvider是局部引用
+//Vuezhuce成公共组件就是全局注册
+import { ValidationProvider, extend } from "vee-validate";
+import { required } from "vee-validate/dist/rules";
+
+//设置关于输入手机号的校验
+extend("phone", {
+  validate: (value) => {
+    return /^(13[0-9]|14[01456879]|15[0-3,5-9]|16[2567]|17[0-8]|18[0-9]|19[0-3,5-9])\d{8}$/.test(
+      value
+    );
+  },
+  message: "手机号不符合规范", // 错误信息，即使用组件中errors[0]的提示信息
+});
+extend("length", {
+  validate(value) {
+    return value.length === 11;
+  },
+  message: "长度必须为11位",
+});
+//这是内置的规则，上面都是自己写的规则
+extend("required", {
+  ...required,
+  message: "请输入手机号",
+});
+
+//设置验证码校验
+extend("code", {
+  validate: (value) => {
+    return /^\d{4}$/.test(value);
+  },
+  message: "验证码位数错误", // 错误信息，即使用组件中errors[0]的提示信息
+});
+
+//设置密码校验
+extend("password", {
+  validate: (value) => {
+    return /^[A-Za-z]{1}[A-Za-z0-9]{6,12}/.test(value);
+  },
+  message: "请输入6-12位以字母开头，和数字组成的密码", // 错误信息，即使用组件中errors[0]的提示信息
+});
+
 export default {
   name: "Register",
+  data() {
+    return {
+      user: {
+        phone: "",
+        code: "", //验证码
+        password: "",
+        repassword: "",
+        isAgreen: false, //是否同意协议
+      },
+    };
+  },
+  methods: {
+    //点击刷新验证码图片，即重新请求，重新赋值src
+    refreshCode(e) {
+      e.target.src = "http://182.92.128.115/api/user/passport/code";
+    },
+    //点击注册完成注册
+    register() {
+      const { phone, code, password, repassword, isAgreen } = this.user;
+      if (password != repassword) {
+        this.$message("两次密码输入不一致");
+        return;
+      }
+      if (!isAgreen) {
+        this.$message("请同意相关用户协议");
+        return;
+      }
+    },
+  },
+  components: {
+    ValidationProvider,
+  },
 };
 </script>
 
