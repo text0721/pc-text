@@ -4,6 +4,9 @@ import { Message } from "element-ui";
 //引入临时用户的id放在请求头上面，以此获取购物车信息
 import getUserTempId from "@utils/getUserTempId";
 
+//引入store，这个store是整个store
+import store from "../store";
+
 // 引入进度条插件
 import NProgress from "nprogress";
 import "nprogress/nprogress.css";
@@ -13,7 +16,11 @@ import { v4 as uuidv4 } from "uuid";
 
 //在第一次发送请求，做拦截器处理的时候就生成未登录用户的临时id
 // 每个userid都有自己对应的购物车数据，要存储在localStorage中永久存储
-uuidv4();
+
+//请求之前缓存一份，这样以后请求都是读取的内存
+const userTempId = getUserTempId();
+const token = store.user.token;
+
 const instance = axios.create({
   // baseURL: "http://182.92.128.115/api/",
   baseURL: "/api", //数据代理后
@@ -22,15 +29,16 @@ const instance = axios.create({
   },
 });
 
-//请求之前缓存一份，这样以后请求都是读取的内存
-const userTempId = getUserTempId();
-
 //设置请求拦截器
 instance.interceptors.request.use(
   (config) => {
     // 开始进度条
     NProgress.start();
 
+    //判断token存在不存在，存在就和临时Id一起传递，后台会自动合并购物车等数据
+    if (token) {
+      config.headers.token = token;
+    }
     // 开始请求的时候携带唯一的id，方便后面获取该id的购物车列表
     // const userTempId = getUserTempId();放到外面缓存，免得每次请求都判断一次
     config.headers.userTempId = userTempId;

@@ -4,11 +4,9 @@ import { reqLogin, reqRegister } from "@api/user";
 // 统一暴露
 export default {
   state: {
-    user: {
       //保存token跟name，方便下次打开浏览器记住该账户自动登录
       name: localStorage.getItem("name") || "",
       token: localStorage.getItem("token") || "",
-    },
   },
   getters: {},
   actions: {
@@ -26,7 +24,7 @@ export default {
   mutations: {
     IS_LOGIN(state, user) {
       state.name = user.name;
-      state.name = user.token;
+      state.token = user.token;
     },
   },
 };

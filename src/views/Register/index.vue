@@ -42,7 +42,7 @@
         <label>登录密码:</label>
         <validation-provider rules="password|required" v-slot="{ errors }">
           <input
-           
+            type="password"
             placeholder="请输入你的登录密码"
             name="密码"
             v-model="user.password"
@@ -173,7 +173,7 @@ export default {
         this.isRegisterDone = true;
         // 3、发送注册请求，注册成功后才跳转登陆界面
         await this.$store.dispatch("register", { phone, password, code });
-        console.log(phone, password,)
+        console.log(phone, password);
 
         this.$router.push("/login");
       } catch (err) {

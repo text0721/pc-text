@@ -18,14 +18,22 @@
               <ValidationProvider rules="required" v-slot="{ errors }">
                 <div class="input-text clearFix">
                   <span class="span"></span>
-                  <input type="text" placeholder="邮箱/用户名/手机号" />
+                  <input
+                    type="text"
+                    placeholder="邮箱/用户名/手机号"
+                    v-model="user.phone"
+                  />
                   <p class="error-msg">{{ errors[0] }}</p>
                 </div>
               </ValidationProvider>
               <div class="input-text clearFix">
                 <span class="pwd span"></span>
                 <ValidationProvider rules="required" v-slot="{ errors }">
-                  <input type="text" placeholder="请输入密码" />
+                  <input
+                    type="text"
+                    placeholder="请输入密码"
+                    v-model="user.password"
+                  />
                   <p class="error-msg">{{ errors[0] }}</p>
                 </ValidationProvider>
               </div>
@@ -126,6 +134,7 @@ export default {
           localStorage.setItem("token", this.token);
           localStorage.setItem("name", this.name);
         }
+        console.log(phone, password)
         this.$router.replace("/");
       } catch {
         this.isLogining = false;

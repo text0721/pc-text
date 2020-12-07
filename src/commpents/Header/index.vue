@@ -4,7 +4,11 @@
       <div class="head-nav">
         <div class="head-nav-left">
           <p>尚品汇欢迎您 ！</p>
-          <p>
+          <p v-if="$store.state.user.name">
+            <span>{{ $store.state.user.name }}</span>
+            <a class="leave">退出登录</a>
+          </p>
+          <p v-else>
             <span>请</span>
             <router-link to="/login">登录</router-link>
             <router-link to="/register" class="register">免费注册</router-link>
@@ -140,7 +144,9 @@ body {
 .head-nav-left {
   display: flex;
   height: 16px;
-  /* line-height: 16px; */
+}
+.leave {
+  margin-left: 5px;
 }
 .head-nav-left p {
   color: #333;
