@@ -21,7 +21,7 @@
       </div>
       <div class="content">
         <label>验证码:</label>
-        <validation-provider rules="code" v-slot="{ errors }">
+        <validation-provider rules="code|required" v-slot="{ errors }">
           <input
             type="text"
             placeholder="请输入验证码"
@@ -30,8 +30,8 @@
           />
           <!-- 获取验证码的是图片，每次发送请求更新图片src就是重新获取验证码了 -->
           <img
-            ref="code"
             src="http://182.92.128.115/api/user/passport/code"
+            ref="refresh"
             alt="code"
             @click="refreshCode"
           />
@@ -40,9 +40,9 @@
       </div>
       <div class="content">
         <label>登录密码:</label>
-        <validation-provider rules="password" v-slot="{ errors }">
+        <validation-provider rules="password|required" v-slot="{ errors }">
           <input
-            type="text"
+           
             placeholder="请输入你的登录密码"
             name="密码"
             v-model="user.password"
@@ -52,9 +52,9 @@
       </div>
       <div class="content">
         <label>确认密码:</label>
-        <validation-provider rules="password" v-slot="{ errors }">
+        <validation-provider rules="password|required" v-slot="{ errors }">
           <input
-            type="text"
+            type="password"
             placeholder="请输入确认密码"
             name="确认密码"
             v-model="user.repassword"
@@ -68,7 +68,7 @@
         <!-- <span class="error-msg" v-if="!user.isAgreen">请同意相关协议</span> -->
       </div>
       <div class="btn">
-        <button>完成注册</button>
+        <button @click="isRegister">完成注册</button>
       </div>
     </div>
 
@@ -114,7 +114,7 @@ extend("length", {
 //这是内置的规则，上面都是自己写的规则
 extend("required", {
   ...required,
-  message: "请输入手机号",
+  message: "此为必填项目",
 });
 
 //设置验证码校验
@@ -144,23 +144,45 @@ export default {
         repassword: "",
         isAgreen: false, //是否同意协议
       },
+      isRegisterDone: false,
     };
   },
   methods: {
     //点击刷新验证码图片，即重新请求，重新赋值src
-    refreshCode(e) {
-      e.target.src = "http://182.92.128.115/api/user/passport/code";
+    refreshCode() {
+      // 原本可以用事件做，但是注册失败后需要重新刷新页面，就只能用ref属性获取元素更好
+      // e.target.src = "http://182.92.128.115/api/user/passport/code";
+      this.$refs.refresh.src = "http://182.92.128.115/api/user/passport/code";
     },
     //点击注册完成注册
-    register() {
-      const { phone, code, password, repassword, isAgreen } = this.user;
-      if (password != repassword) {
-        this.$message("两次密码输入不一致");
-        return;
-      }
-      if (!isAgreen) {
-        this.$message("请同意相关用户协议");
-        return;
+    async isRegister() {
+      try {
+        // 1、收集用户数据
+        const { phone, code, password, repassword, isAgreen } = this.user;
+        // 2、校验相关数据
+        if (password != repassword) {
+          this.$message.error("两次密码输入不一致");
+          return;
+        }
+        if (!isAgreen) {
+          this.$message.error("请同意相关用户协议");
+          return;
+        }
+        //防止注册按钮重复点击
+        if (this.isRegisterDone) return;
+        this.isRegisterDone = true;
+        // 3、发送注册请求，注册成功后才跳转登陆界面
+        await this.$store.dispatch("register", { phone, password, code });
+        console.log(phone, password,)
+
+        this.$router.push("/login");
+      } catch (err) {
+        this.isRegisterDone = false;
+        // 4、失败就清空密码,重新输入用户名密码和验证码
+        this.user.password = "";
+        this.user.repassword = "";
+        // 重新刷新验证码
+        this.refreshCode();
       }
     },
   },

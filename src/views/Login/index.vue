@@ -14,26 +14,29 @@
           </ul>
 
           <div class="content">
-            <form action="##" @submit.prevent="login">
+            <form action="##" @submit.prevent="isLogin">
+              <ValidationProvider rules="required" v-slot="{ errors }">
+                <div class="input-text clearFix">
+                  <span class="span"></span>
+                  <input type="text" placeholder="邮箱/用户名/手机号" />
+                  <p class="error-msg">{{ errors[0] }}</p>
+                </div>
+              </ValidationProvider>
               <div class="input-text clearFix">
-                <span></span>
-                <input
-                  type="text"
-                  placeholder="邮箱/用户名/手机号"
-                  v-model="phone"
-                />
-              </div>
-              <div class="input-text clearFix">
-                <span class="pwd"></span>
-                <input
-                  type="password"
-                  placeholder="请输入密码"
-                  v-model="password"
-                />
+                <span class="pwd span"></span>
+                <ValidationProvider rules="required" v-slot="{ errors }">
+                  <input type="text" placeholder="请输入密码" />
+                  <p class="error-msg">{{ errors[0] }}</p>
+                </ValidationProvider>
               </div>
               <div class="setting clearFix">
                 <label class="checkbox inline">
-                  <input name="m1" type="checkbox" value="2" checked="" />
+                  <input
+                    name="m1"
+                    type="checkbox"
+                    value="2"
+                    v-model="isAutoLogin"
+                  />
                   自动登录
                 </label>
                 <span class="forget">忘记密码？</span>
@@ -75,29 +78,62 @@
 </template>
 
 <script>
-import { reqLogin } from "@api/user";
+import { mapState } from "vuex";
+
+import { ValidationProvider, extend } from "vee-validate";
+import { required } from "vee-validate/dist/rules";
+
+extend("required", {
+  ...required,
+  message: "请输入用户名/密码",
+});
 
 export default {
   name: "Login",
+  created() {
+    if (this.token) {
+      this.$router.replace("/");
+    }
+  },
   data() {
     return {
-      phone: "",
-      password: "",
+      user: {
+        phone: "",
+        password: "",
+      },
+      isLogining: false, // 正在登录，设置不能重复点击登录
+      isAutoLogin: true, // 是否自动登录
     };
+  },
+  computed: {
+    ...mapState({
+      token: (state) => state.user.token,
+      name: (state) => state.user.name,
+    }),
   },
   methods: {
     //定义点击登录函数发送登录请求
-    login() {
-      reqLogin(this.phone, this.password)
-        .then((res) => {
-          console.log("成功", res);
-          this.$router.push("/");
-        })
-        .catch((err) => {
-          // window.alert(err)//已使用ui提示框
-          console.log("失败", err);
-        });
+    async isLogin() {
+      const { phone, password } = this.user;
+      // 如果登录按钮已经点击过就不能在重复点击发送请求
+      try {
+        if (this.isLogining) return;
+        this.isLogining = true;
+        await this.$store.dispatch("login", { phone, password });
+        //判断是选中了自动登录，选择了就保存相关信息
+        //登录成功后保存name及token，方便下次该浏览器记住可以直接是登录状态，并且显示用户名
+        if (this.isAutoLogin) {
+          localStorage.setItem("token", this.token);
+          localStorage.setItem("name", this.name);
+        }
+        this.$router.replace("/");
+      } catch {
+        this.isLogining = false;
+      }
     },
+  },
+  components: {
+    ValidationProvider,
   },
 };
 </script>
@@ -171,7 +207,7 @@ export default {
           .input-text {
             margin-bottom: 16px;
 
-            span {
+            .span {
               float: left;
               width: 37px;
               height: 32px;
@@ -179,6 +215,9 @@ export default {
               background: url(../../assets/images/icons.png) no-repeat -10px -201px;
               box-sizing: border-box;
               border-radius: 2px 0 0 2px;
+            }
+            .error-msg {
+              color: red;
             }
 
             .pwd {

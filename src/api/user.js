@@ -11,3 +11,16 @@ export const reqLogin = (phone, password) => {
     },
   });
 };
+
+//注册请求
+export const reqRegister = ({ phone, password, code }) => {
+  return request({
+    method: "POST",
+    url: "/user/passport/register",
+    data: {
+      phone,
+      password,
+      code,
+    },
+  });
+};
