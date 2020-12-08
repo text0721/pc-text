@@ -173,8 +173,6 @@ export default {
         this.isRegisterDone = true;
         // 3、发送注册请求，注册成功后才跳转登陆界面
         await this.$store.dispatch("register", { phone, password, code });
-        console.log(phone, password);
-
         this.$router.push("/login");
       } catch (err) {
         this.isRegisterDone = false;

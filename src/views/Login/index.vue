@@ -15,7 +15,7 @@
 
           <div class="content">
             <form action="##" @submit.prevent="isLogin">
-              <ValidationProvider rules="required" v-slot="{ errors }">
+              <ValidationProvider rules="loginRequired" v-slot="{ errors }">
                 <div class="input-text clearFix">
                   <span class="span"></span>
                   <input
@@ -28,7 +28,7 @@
               </ValidationProvider>
               <div class="input-text clearFix">
                 <span class="pwd span"></span>
-                <ValidationProvider rules="required" v-slot="{ errors }">
+                <ValidationProvider rules="loginRequired" v-slot="{ errors }">
                   <input
                     type="text"
                     placeholder="请输入密码"
@@ -91,7 +91,7 @@ import { mapState } from "vuex";
 import { ValidationProvider, extend } from "vee-validate";
 import { required } from "vee-validate/dist/rules";
 
-extend("required", {
+extend("loginRequired", {
   ...required,
   message: "请输入用户名/密码",
 });
@@ -99,6 +99,8 @@ extend("required", {
 export default {
   name: "Login",
   created() {
+    //设置自动登录，检测到vuex中有token后就直接跳转到首页
+    //也可以读取localStore，但是vuex中式走内存的，速度比读取浏览器的缓存快
     if (this.token) {
       this.$router.replace("/");
     }
@@ -134,7 +136,6 @@ export default {
           localStorage.setItem("token", this.token);
           localStorage.setItem("name", this.name);
         }
-        console.log(phone, password)
         this.$router.replace("/");
       } catch {
         this.isLogining = false;

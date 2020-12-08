@@ -37,8 +37,8 @@
               <button
                 href="javascript:void(0)"
                 class="mins"
-                :disabled="cart.skuNum < 2"
-                @click="updateChartCount(cart.skuId, -1)"
+                :disabled="cart.skuNum === 1"
+                @click="updateChartCount(cart.skuId, -1, cart.skuNum)"
               >
                 -
               </button>
@@ -46,13 +46,16 @@
                 autocomplete="off"
                 type="number"
                 :value="cart.skuNum"
+                @blur="updateSkuNum(cart.skuId, cart.skuNum, $event)"
+                @input="formatSkuNum"
                 minnum="1"
                 class="itxt"
               />
               <button
                 href="javascript:void(0)"
                 class="plus"
-                @click="updateChartCount(cart.skuId, 1)"
+                :disabled="cart.skuNum === 10"
+                @click="updateChartCount(cart.skuId, 1, cart.skuNum)"
               >
                 +
               </button>
@@ -102,6 +105,12 @@
 import { mapState, mapGetters, mapActions } from "vuex";
 export default {
   name: "ShopCart",
+  data() {
+    return {
+      disabledAdd: false,
+      disabledCut: false,
+    };
+  },
   computed: {
     ...mapState({
       cartList: (state) => state.shopcart.cartList,
@@ -137,8 +146,36 @@ export default {
       "updateCartChecked",
       "delShopCart",
     ]),
+    //绑定input事件，格式化用户输入的数量不规范,非数字都替换成空，再触发失去焦点事件updateSkuNum
+    formatSkuNum(e) {
+      let skuNum = +e.target.value.replace(/\D+/g, "");
+      if (skuNum < 1) {
+        // this.disabledCut = true;
+        skuNum = 1;
+      } else if (skuNum > 10) {
+        // this.disabledAdd = true;
+        //假设仓库库存数量是10
+        skuNum = 10;
+      } else {
+        // this.disabledCut = false;
+        // this.disabledAdd = false;
+      }
+      // e.target.value = skuNum;
+      // if (+e.target.value < 1) {
+      //   e.target.value = 1;
+      // }
+      // if (+e.target.value > 10) {
+      //   e.target.value = 10;
+      // }
+    },
+    updateSkuNum(skuId, skuNum, e) {
+      //用户直接输入数量，失去焦点时，根据旧的skuNum值，计算应该发送请求增加/减少真正的skuNum值
+      //请求的实际数量= 失去焦点后 - 失去焦点前 = e.target.value - skuNum
+      if (+e.target.value === skuNum) return;
+      this.updateCartCount({ skuId, skuNum: e.target.value - skuNum });
+    },
     //加减更新商品数量
-    async updateChartCount(skuId, skuNum) {
+    async updateChartCount(skuId, skuNum, count) {
       //一定记得多个参数要用对象的方式传递过去
       await this.updateCartCount({ skuId, skuNum });
     },
