@@ -175,7 +175,7 @@ export default {
       this.updateCartCount({ skuId, skuNum: e.target.value - skuNum });
     },
     //加减更新商品数量
-    async updateChartCount(skuId, skuNum, count) {
+    async updateChartCount(skuId, skuNum) {
       //一定记得多个参数要用对象的方式传递过去
       await this.updateCartCount({ skuId, skuNum });
     },

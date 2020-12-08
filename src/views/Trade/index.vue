@@ -66,6 +66,7 @@
         <textarea
           placeholder="建议留言前先与商家沟通确认"
           class="remarks-cont"
+          v-model="orderComment"
         ></textarea>
       </div>
       <div class="line"></div>
@@ -106,13 +107,13 @@
       </div>
     </div>
     <div class="sub clearFix">
-      <router-link class="subBtn" to="/pay">提交订单</router-link>
+      <button class="subBtn" @click="getAddOrder">提交订单</button>
     </div>
   </div>
 </template>
 
 <script>
-import { reqGetTrade } from "@api/pay";
+import { reqGetTrade, reqAddOrder } from "@api/pay";
 export default {
   name: "Trade",
   data() {
@@ -120,6 +121,7 @@ export default {
       trade: {},
       //一上来因为不知道到底选中哪个地址，默认那个都不选，应该根据返回的数据判断，
       defaultselectId: -1,
+      orderComment: "",
     };
   },
   computed: {
@@ -136,7 +138,31 @@ export default {
         : [];
     },
   },
+  methods: {
+    async getAddOrder() {
+      const { tradeNo, detailArrayList } = this.trade;
+      const { phoneNum, userAddress } = this.selectAddress;
+      //提交订单请求,成功后只返回订单的id，携带去pay页面
+      const orderId = await reqAddOrder({
+        tradeNo,
+        consignee: this.selectAddress.consignee,
+        consigneeTel: phoneNum,
+        deliveryAddress: userAddress,
+        paymentWay: "ONLINE",
+        orderComment: this.orderComment,
+        orderDetailList: detailArrayList,
+      });
+      this.$router.push(`/pay?orderID=${orderId}`);
+      // this.$router.push({
+      //   path: "/pay",
+      //   query: {
+      //     orderId,
+      //   },
+      // });
+    },
+  },
   async mounted() {
+    //请求获取由提交订单进入到的订单详情
     const trade = await reqGetTrade();
     this.trade = trade;
     //将未切换选地址的初始值设置成默认地址的数据,将来切换了再更改
