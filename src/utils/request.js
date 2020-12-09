@@ -17,9 +17,15 @@ import "nprogress/nprogress.css";
 //请求之前缓存一份，这样以后请求都是读取的内存
 const userTempId = getUserTempId();
 
+// 通过其值来区分运行环境
+console.log(process.env.NODE_ENV); // development  production ......
+
+const baseURL =
+  process.env.NODE_ENV === "develement" ? "/" : "http://182.92.128.115/";
 const instance = axios.create({
-  // baseURL: "http://182.92.128.115/api/",
-  baseURL: "/api", //数据代理后
+  // baseURL: "http://182.92.128.115/api/",//代理前
+  // baseURL: "/api", //数据代理后
+  baseURL: `${baseURL}api`, //上线打包的时候
   header: {
     // token: '' // 不可以设置公共参数，此项目登录注册接口不需要
   },
