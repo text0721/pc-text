@@ -45,11 +45,15 @@
         </div>
         <div class="step-cont">
           <ul class="payType">
-            <li :class="{ selected: !isSelected }" @click="selected(1)">
-              <img src="./images/pay2.jpg" />
-            </li>
-            <li :class="{ selected: isSelected }" @click="selected(0)">
-              <img src="./images/pay3.jpg" />
+            <li
+              v-for="(img, index) in payStyle"
+              :key="index"
+              v-show="index === 0 || index === 1"
+              :class="{ selected: img.checked || index === defaultIndex }"
+              @click="imgClick(img, index)"
+            >
+              <!-- 图片的src路径循环的时候，必须写在public才会被解析，放在views解析不了 -->
+              <img :src="img.imgsrc" />
             </li>
           </ul>
         </div>
@@ -61,19 +65,16 @@
           </div>
           <div class="step-cont">
             <ul class="payType">
-              <li><img src="./images/pay10.jpg" /></li>
-              <li><img src="./images/pay11.jpg" /></li>
-              <li><img src="./images/pay12.jpg" /></li>
-              <li><img src="./images/pay13.jpg" /></li>
-              <li><img src="./images/pay14.jpg" /></li>
-              <li><img src="./images/pay15.jpg" /></li>
-              <li><img src="./images/pay16.jpg" /></li>
-              <li><img src="./images/pay17.jpg" /></li>
-              <li><img src="./images/pay18.jpg" /></li>
-              <li><img src="./images/pay19.jpg" /></li>
-              <li><img src="./images/pay20.jpg" /></li>
-              <li><img src="./images/pay21.jpg" /></li>
-              <li><img src="./images/pay22.jpg" /></li>
+              <li
+                v-for="(img, index) in payStyle"
+                :key="index"
+                v-show="index > 1"
+                :class="{ selected: img.checked }"
+                @click="imgClick(img, index)"
+              >
+                {{ img.src }}
+                <img :src="img.imgsrc" />
+              </li>
             </ul>
           </div>
         </div>
@@ -106,23 +107,45 @@ export default {
   name: "Pay",
   data() {
     return {
-      isSelected: true, //选择微信
+      defaultIndex: 1, //默认index是1选择微信
+      payStyle: [
+        { imgsrc: "./images/pay2.jpg", checked: false },
+        { imgsrc: "./images/pay3.jpg", checked: false },
+        { imgsrc: "./images/pay10.jpg", checked: false },
+        { imgsrc: "./images/pay11.jpg", checked: false },
+        { imgsrc: "./images/pay12.jpg", checked: false },
+        { imgsrc: "./images/pay13.jpg", checked: false },
+        { imgsrc: "./images/pay14.jpg", checked: false },
+        { imgsrc: "./images/pay15.jpg", checked: false },
+        { imgsrc: "./images/pay16.jpg", checked: false },
+        { imgsrc: "./images/pay17.jpg", checked: false },
+        { imgsrc: "./images/pay18.jpg", checked: false },
+        { imgsrc: "./images/pay19.jpg", checked: false },
+        { imgsrc: "./images/pay20.jpg", checked: false },
+      ],
     };
   },
+  watch: {
+    // 监视点击的支付方式，根据不同的方式请求不同的支付接口
+    defaultIndex() {},
+  },
   methods: {
-    //设置选择支付方式
-    selected(num) {
-      if (num === 1) {
-        this.isSelected = false;
-      }
-      if (num === 0) {
-        this.isSelected = true;
+    //设置选择支付方式的点击切换
+    imgClick(img, index) {
+      //设置点击哪个支付方式就选中支付方式添加class选中
+      this.defaultIndex = index;
+      let pay = this.payStyle;
+      if (pay && pay.length) {
+        pay.forEach((res) => {
+          res.checked = false;
+        });
+        img.checked = true;
       }
     },
     // 点击选择支付跳出相应支付方式的二维码
     async paying() {
-      //如果选择的是微信支付
-      if (this.isSelected) {
+      //如果选择的是微信支付，就弹出支付
+      if (this.defaultIndex === 1) {
         // 获取请求的二维码图片
         const res = await reqGetQRCode(this.$route.query.orderID);
 
@@ -162,6 +185,8 @@ export default {
           .catch(() => {
             this.$message.error("支付遇到了问题，请重新试试");
           });
+      } else {
+        window.alert("请选择微信支付");
       }
     },
   },
