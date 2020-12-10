@@ -9,7 +9,7 @@
           </div>
           <div class="right-info">
             <p class="title">
-              {{sku.skuName}}
+              {{ sku.skuName }}
             </p>
             <p class="attr">颜色：WFZ5099IH/5L钛金釜内胆 数量：2</p>
             <!-- <p class="attr">xxxxxxx</p> -->
@@ -32,8 +32,17 @@ export default {
       sku: this.$store.state.detail.goodsDetail.skuInfo,
     };
   },
+  beforeRouteEnter(to, from, next) {
+    next((vm) => {
+      console.log(vm.sku.skuName);
+      // 不能访问 this，该守卫在导航确认前被调用，新组件还没被创建
+      // 但是可以通过next访问实例
+      if (from.name === "detail") next();
+      next("/shopcart");
+    });
+  },
   mounted() {
-    console.log(this.sku);
+    // console.log(this.sku);
   },
 };
 </script>

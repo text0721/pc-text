@@ -92,9 +92,17 @@
                 <dt class="title">{{ spuSaleAttr.saleAttrName }}</dt>
                 <dd
                   changepirce="0"
-                  class="active"
                   v-for="spuSaleAtrValue in spuSaleAttr.spuSaleAttrValueList"
                   :key="spuSaleAtrValue.id"
+                  :class="{
+                    active: spuSaleAtrValue.isChecked === `1`,
+                  }"
+                  @click="
+                    sectedAtrValue(
+                      spuSaleAtrValue,
+                      spuSaleAttr.spuSaleAttrValueList
+                    )
+                  "
                 >
                   {{ spuSaleAtrValue.saleAttrValueName }}
                 </dd>
@@ -369,6 +377,7 @@ export default {
     return {
       imgIndex: 0,
       skuNum: 1,
+      // defaultIndex: -1,
     };
   },
   methods: {
@@ -379,6 +388,10 @@ export default {
     },
     //添加至购物车，发送请求更改后端数据成功后,再跳转
     async addCartList() {
+      // 查看每个属性是否已经筛选，如果有一个属性没选择就直接返回
+      // 计算总商品属性数量
+      const total = this.spuSaleAttrList.length;
+
       try {
         //actions方法默认只能接受1个参数，当有多个参数的时候，只能用对象传递，store中用结构赋值
         await this.updateCartCount({
@@ -390,6 +403,12 @@ export default {
       } catch (err) {
         window.confirm(err);
       }
+    },
+    //设置选择商品属性的明细高亮
+    sectedAtrValue(value, valueList) {
+      // this.defaultIndex = -1;
+      valueList.forEach((val) => (val.isChecked = "0"));
+      value.isChecked = "1";
     },
   },
   mounted() {

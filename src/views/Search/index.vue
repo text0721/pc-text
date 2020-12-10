@@ -148,13 +148,14 @@
           <Pagination
             @current-change="handleCurrentChange"
             :current-page="searchgoodList.pageNo"
+            :page-sizes="[5, 10, 15, 20]"
             :pager-count="7"
             :page-size="5"
             :total="total"
           />
           <!-- background
             :page-size="9" 每页显示条目个数
-            page-sizes     每页显示个数选择器的选项设置
+            page-sizes     每页显示的个数
             page-count     总页数
             pager-count    页码按钮的数量，当总页数超过该值时会折叠
             current-page   当前页数
@@ -231,7 +232,7 @@ export default {
   methods: {
     ...mapActions(["getGoodsList"]),
 
-    //封装根据路径发送请求的函数
+    //封装根据路径发送请求的函数，默认每次发请求都是在第一页，当用户点击了某页再重新赋值
     updatePath(pageNo = 1) {
       //结构searchText，并重新更名为keyword
       const { searchText: keyword } = this.$route.params;
@@ -336,12 +337,12 @@ export default {
       return this.searchgoodList.order.indexOf(order) > -1;
     },
 
-    // 当每页条数发生变化触发
+    // 当每页显示的条数发生变化触发，会自动获取到每页码有多少条数据page-sizes设置的值
     handleSizeChange(pageSize) {
-      this.options.pageSize = pageSize;
+      this.searchgoodList.pageSize = pageSize;
       this.updatePath();
     },
-    // 当页码发生变化触发
+    // 当前点击的页码发生变化触发，会自动接收到当前点击的页码pageNo
     handleCurrentChange(pageNo) {
       this.updatePath(pageNo);
     },
